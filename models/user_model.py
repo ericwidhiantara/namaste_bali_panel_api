@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, field_validator
+
 
 class UserModel(BaseModel):
     email: EmailStr
@@ -7,8 +8,9 @@ class UserModel(BaseModel):
     username: str
     password: str
 
-@validator("password_confirmation")
-def passwords_match(cls, v, values, **kwargs):
+
+@field_validator("password_confirmation")
+def passwords_match(v, values):
     if "password" in values and v != values["password"]:
         raise ValueError("passwords do not match")
     return v
