@@ -1,4 +1,5 @@
 
+import uuid
 from fastapi import HTTPException,Form
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -24,7 +25,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-class AuthHandler:
+class AuthController:
     def __init__(self):
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.client = MongoClient(MONGODB_URL)
@@ -33,6 +34,10 @@ class AuthHandler:
 
     async def get_user_by_email(self, email: str):
         user = self.collection.find_one({"email": email})
+        return user
+    
+    async def get_user_by_id(self, id: str):
+        user = self.collection.find_one({"id": id})
         return user
 
     async def authenticate_user(self, email: str, password: str):
@@ -61,6 +66,7 @@ class AuthHandler:
         hashed_password = self.hash_password(user.password)
         
         user_data = {
+            "id": str(uuid.uuid4()),
             "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
@@ -79,3 +85,16 @@ class AuthHandler:
 
     def hash_password(self, password):
         return self.pwd_context.hash(password)
+
+    async def get_users(self):
+        users =  self.collection.find({})
+        # Convert MongoDB cursor to list of dictionaries
+        user_list = [user for user in users]
+    
+        # Convert ObjectId to string representation for each user
+        for user in user_list:
+            user.pop("_id", None)
+            user.pop("password", None)
+
+        # Return the list of users
+        return user_list
