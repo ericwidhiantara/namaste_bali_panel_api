@@ -1,16 +1,16 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
-from pymongo import MongoClient
-from pydantic import BaseModel
 import os
-from dotenv import load_dotenv
-from models import MessageModel
+from datetime import datetime
 
-from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from pymongo import MongoClient
+
+from models import MessageModel
 
 # Load environment variables from .env file
 load_dotenv()
 
-# MongoDB connection settings
+# MongoDB's connection settings
 MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = "chateo"
 MESSAGE_COLLECTION = "messages"
@@ -30,7 +30,7 @@ class ChatController:
         message_dict["is_read"] = False
         message_dict["created_at"] = int(datetime.now().timestamp())
         message_dict["updated_at"] = int(datetime.now().timestamp())
-       
+
         self.collection.insert_one(message_dict)
 
     def get_messages(self, sender: str, recipient: str):
