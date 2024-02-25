@@ -7,15 +7,20 @@ import jwt
 from models import UserModel
 
 from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # MongoDB connection settings
-MONGODB_URL ="mongodb://root:root@localhost:27017/"
+MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = "chateo"
 USER_COLLECTION = "users"
 
 
 # JWT settings
-SECRET_KEY = "50f1c5f3c8d8d5633ca20f62bff5214b433475528d8cbafddd6f102d36ce72b5"
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
