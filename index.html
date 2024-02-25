@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .message-box {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .message {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            max-width: 70%;
+        }
+        .message.sender {
+            align-self: flex-end;
+            background-color: #dcf8c6;
+            margin-left: 30%;
+        }
+        select, input[type="text"], button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="message-box" id="message-box">
+            <!-- Messages will be added here dynamically -->
+        </div>
+        <div>
+            <select id="sender">
+                <!-- Senders will be added here dynamically -->
+            </select>
+            <select id="recipient">
+                <!-- Recipients will be added here dynamically -->
+            </select>
+            <input type="text" id="message" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8000/ws");
+
+        let sender_id;
+
+        socket.onopen = function(event) {
+            console.log("WebSocket connected.");
+            fetchUsers();
+        };
+
+        socket.onmessage = function(event) {
+            const messageBox = document.getElementById("message-box");
+            const message = JSON.parse(event.data);
+            console.log(message);
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            
+            // Get the selected sender's ID from the dropdown menu
+            const selectedSenderId = document.getElementById("sender").value;
+
+            if (message.sender.id === selectedSenderId) {
+                messageElement.classList.add("sender");
+            }
+            
+            messageElement.innerText = `${message.sender.username}: ${message.message}`;
+            messageBox.appendChild(messageElement);
+            // Scroll to the bottom of the message box
+            messageBox.scrollTop = messageBox.scrollHeight;
+        };
+
+        async function fetchUsers() {
+            const response = await fetch("http://localhost:8000/users");
+            const users = await response.json();
+            const senderSelect = document.getElementById("sender");
+            const recipientSelect = document.getElementById("recipient");
+            users.forEach(user => {
+                const optionSender = document.createElement("option");
+                optionSender.value = user.id;
+                optionSender.textContent = user.username;
+                const optionRecipient = document.createElement("option");
+                optionRecipient.value = user.id;
+                optionRecipient.textContent = user.username;
+                senderSelect.appendChild(optionSender);
+                recipientSelect.appendChild(optionRecipient);
+            });
+        }
+
+        function sendMessage() {
+            const senderId = document.getElementById("sender").value;
+            const recipientId = document.getElementById("recipient").value;
+            const message = document.getElementById("message").value;
+            const data = {
+                sender_id: senderId,
+                recipient_id: recipientId,
+                message: message
+            };
+            socket.send(JSON.stringify(data));
+            document.getElementById("message").value = ""; // Clear input field
+        }
+    </script>
+</body>
+</html>
