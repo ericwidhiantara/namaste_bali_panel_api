@@ -25,7 +25,7 @@ class MyMiddleware(BaseHTTPMiddleware):
             self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         start_time = time.time()
-        response = await  call_next(request)
+        response = await call_next(request)
         process_time = time.time() - start_time
         response.headers["X-Process-Time"] = str(process_time)
         return response
@@ -94,50 +94,6 @@ async def send_private_message(sender: str, message: str):
         await clients[recipient].send_text(f"From {sender}: {msg}")
     else:
         print(f"Recipient '{recipient}' not found")
-
-
-# # WebSocket endpoint to handle incoming connections
-# @app.websocket("/ws/{user_id}")
-# async def websocket_endpoint_online(websocket: WebSocket):
-#     await websocket.accept()
-#     print("WebSocket connection established:", websocket)
-
-#     try:
-#         while True:
-#             # Await data from the client
-#             data = await websocket.receive_text()
-#             print("Received data:", data)
-
-#             # Parse received JSON data
-#             try:
-#                 json_data = json.loads(data)
-#             except json.JSONDecodeError:
-#                 print("Invalid JSON format:", data)
-#                 continue
-
-#             # Extract the user_id from the received data
-#             user_id = json_data.get("user_id")
-
-#             if user_id is not None:
-#                 # Check if the user is online
-#                 is_online = websocket in active_users
-
-#                 # Send the online status back to the client
-#                 response = {"user_id": user_id, "is_online": is_online}
-#                 # Add the new connection to the list of active users
-
-#                 active_users.append(user_id)
-#                 print("active users length", len(active_users))
-#                 print("active users", active_users)
-#                 print("json", json.dumps(active_users))
-#                 await websocket.send_text(json.dumps(list(active_users)))
-#             else:
-#                 print("Missing user_id in message:", json_data)
-
-#     except WebSocketDisconnect:
-#         # Remove the disconnected connection from the list of active users
-#         active_users.remove(websocket)
-#         print("WebSocket connection closed:", websocket)
 
 
 # WebSocket endpoint for chat
@@ -221,6 +177,27 @@ async def login(email: str = Form(...), password: str = Form(...)):
 async def get_users():
     users = await auth_handler.get_users()
     return users
+
+
+@app.get("/messages")
+async def get_messages(sender_id: str, recipient_id: str):
+    messages_old = chat_controller.get_messages(sender_id, recipient_id)
+
+    messages = [item for item in messages_old]
+
+    # Convert ObjectId to string representation for each user
+    for message in messages:
+        message.pop("_id", None)
+        sender_data = await auth_handler.get_user_by_id(sender_id)
+        sender_data.pop("_id", None)
+
+        recipient_data = await auth_handler.get_user_by_id(recipient_id)
+        recipient_data.pop("_id", None)
+
+        message["sender"] = sender_data
+        message["recipient"] = recipient_data
+    print("ini messages", messages)
+    return messages
 
 
 if __name__ == "__main__":
