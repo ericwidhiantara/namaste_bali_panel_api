@@ -1,6 +1,6 @@
 import json
 import time
-from typing import List
+from typing import List, Dict
 
 from fastapi import FastAPI, HTTPException, Form, WebSocket, WebSocketDisconnect
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -41,42 +41,103 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Assuming you have a list to track active user connections
-active_users = set()
+# Initialize the set to store active users
+active_users = []
+
+# Store active connections
+active_connections = {}
+
+# @app.websocket("/ws/{user_id}")
+# async def websocket_endpoint(websocket: WebSocket, user_id: str):
+#     await websocket.accept()
+#     active_connections[user_id] = websocket
+#
+#     try:
+#         while True:
+#             # Wait for incoming message
+#             data = await websocket.receive_text()
+#             # Split message to get recipient, sender, and message content
+#             recipient, sender, message = data.split(":", 2)
+#             # Check if recipient is connected
+#             if recipient in active_connections:
+#                 # Send message to recipient
+#                 await active_connections[recipient].send_text(f"Message from {sender}: {message}")
+#             else:
+#                 # If recipient is not connected, handle accordingly
+#                 await websocket.send_text(f"Recipient {recipient} is not connected")
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#     finally:
+#         # Remove connection when client disconnects
+#         del active_connections[user_id]
+
+# Store connected clients
+clients: Dict[str, WebSocket] = {}
 
 
-@app.websocket("/ws/{user_id}")
-async def websocket_endpoint_online(websocket: WebSocket):
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: str):
     await websocket.accept()
-    print(websocket)
-    # Add the new connection to the list of active users
-    active_users.add(websocket)
-    print("WebSocket connection established.")
+    clients[client_id] = websocket
 
     try:
         while True:
-            # Await data from the client
             data = await websocket.receive_text()
-            print("Received data:", data)
-            json_data = json.loads(data)
-
-            # Extract the user_id from the received data
-            user_id = json_data.get("user_id")
-
-            if user_id is not None:
-                # Check if the user is online
-                is_online = websocket in active_users
-
-                # Send the online status back to the client
-                response = {"user_id": user_id, "is_online": is_online}
-                await websocket.send_text(json.dumps(response))
-            else:
-                print("Invalid message format:", json_data)
-
+            await send_private_message(client_id, data)
     except WebSocketDisconnect:
-        # Remove the disconnected connection from the list of active users
-        active_users.remove(websocket)
-        print("WebSocket connection closed.")
+        del clients[client_id]
+
+
+async def send_private_message(sender: str, message: str):
+    recipient, msg = message.split(":")
+    if recipient in clients:
+        await clients[recipient].send_text(f"From {sender}: {msg}")
+    else:
+        print(f"Recipient '{recipient}' not found")
+
+
+# # WebSocket endpoint to handle incoming connections
+# @app.websocket("/ws/{user_id}")
+# async def websocket_endpoint_online(websocket: WebSocket):
+#     await websocket.accept()
+#     print("WebSocket connection established:", websocket)
+
+#     try:
+#         while True:
+#             # Await data from the client
+#             data = await websocket.receive_text()
+#             print("Received data:", data)
+
+#             # Parse received JSON data
+#             try:
+#                 json_data = json.loads(data)
+#             except json.JSONDecodeError:
+#                 print("Invalid JSON format:", data)
+#                 continue
+
+#             # Extract the user_id from the received data
+#             user_id = json_data.get("user_id")
+
+#             if user_id is not None:
+#                 # Check if the user is online
+#                 is_online = websocket in active_users
+
+#                 # Send the online status back to the client
+#                 response = {"user_id": user_id, "is_online": is_online}
+#                 # Add the new connection to the list of active users
+
+#                 active_users.append(user_id)
+#                 print("active users length", len(active_users))
+#                 print("active users", active_users)
+#                 print("json", json.dumps(active_users))
+#                 await websocket.send_text(json.dumps(list(active_users)))
+#             else:
+#                 print("Missing user_id in message:", json_data)
+
+#     except WebSocketDisconnect:
+#         # Remove the disconnected connection from the list of active users
+#         active_users.remove(websocket)
+#         print("WebSocket connection closed:", websocket)
 
 
 # WebSocket endpoint for chat
