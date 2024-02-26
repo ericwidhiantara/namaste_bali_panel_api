@@ -188,10 +188,10 @@ async def get_messages(sender_id: str, recipient_id: str):
     # Convert ObjectId to string representation for each user
     for message in messages:
         message.pop("_id", None)
-        sender_data = await auth_handler.get_user_by_id(sender_id)
+        sender_data = await auth_handler.get_user_by_id(message["sender_id"])
         sender_data.pop("_id", None)
 
-        recipient_data = await auth_handler.get_user_by_id(recipient_id)
+        recipient_data = await auth_handler.get_user_by_id(message["recipient_id"])
         recipient_data.pop("_id", None)
 
         message["sender"] = sender_data
