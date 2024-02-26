@@ -12,12 +12,57 @@
             padding: 0;
         }
         .container {
-            max-width: 600px;
+            display: flex;
+            max-width: 800px;
             margin: 50px auto;
-            padding: 20px;
             background-color: #f5f5f5;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .user-list {
+            flex: 1;
+            padding: 20px;
+        }
+        .chat-screen {
+            flex: 2;
+            padding: 20px;
+            border-left: 1px solid #ccc;
+        }
+        .user-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .contact {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .contact img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: green;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+        .offline-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            margin-left: auto;
         }
         .message-box {
             max-height: 300px;
@@ -37,7 +82,7 @@
             background-color: #dcf8c6;
             margin-left: 30%;
         }
-        select, input[type="text"], button {
+        input[type="text"], button {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ccc;
@@ -55,81 +100,223 @@
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="user-info" id="user-info">
+    <!-- User info will be displayed here dynamically -->
+</div>
+<div class="container">
+    <div class="user-list" id="user-list">
+        <!-- User list will be displayed here dynamically -->
+    </div>
+    <div class="chat-screen" id="chat-screen">
         <div class="message-box" id="message-box">
             <!-- Messages will be added here dynamically -->
         </div>
         <div>
-            <select id="sender">
-                <!-- Senders will be added here dynamically -->
-            </select>
-            <select id="recipient">
-                <!-- Recipients will be added here dynamically -->
-            </select>
             <input type="text" id="message" placeholder="Type a message...">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
+</div>
 
-    <script>
-        const socket = new WebSocket("ws://localhost:8000/ws");
+<script>
+    let user_id;
 
-        let sender_id;
+    let sender_id;
+    let recipient_id;
 
-        socket.onopen = function(event) {
-            console.log("WebSocket connected.");
-            fetchUsers();
-        };
+    var messageSocket;
 
-        socket.onmessage = function(event) {
-            const messageBox = document.getElementById("message-box");
-            const message = JSON.parse(event.data);
-            console.log(message);
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message");
-            
-            // Get the selected sender's ID from the dropdown menu
-            const selectedSenderId = document.getElementById("sender").value;
 
-            if (message.sender.id === selectedSenderId) {
-                messageElement.classList.add("sender");
-            }
-            
-            messageElement.innerText = `${message.sender.username}: ${message.message}`;
-            messageBox.appendChild(messageElement);
-            // Scroll to the bottom of the message box
-            messageBox.scrollTop = messageBox.scrollHeight;
-        };
+ fetchUsers();
+        displayUserInfo();
 
+    // Function to fetch users and display user list
         async function fetchUsers() {
+            // Fetch user list from server
             const response = await fetch("http://localhost:8000/users");
             const users = await response.json();
-            const senderSelect = document.getElementById("sender");
-            const recipientSelect = document.getElementById("recipient");
+            const userList = document.getElementById("user-list");
+            userList.innerHTML = ""; // Clear previous user list
             users.forEach(user => {
-                const optionSender = document.createElement("option");
-                optionSender.value = user.id;
-                optionSender.textContent = user.username;
-                const optionRecipient = document.createElement("option");
-                optionRecipient.value = user.id;
-                optionRecipient.textContent = user.username;
-                senderSelect.appendChild(optionSender);
-                recipientSelect.appendChild(optionRecipient);
+                // Exclude the current user from the user list
+                if (user.id !== sender_id) {
+                    // Create user element
+                    const userElement = document.createElement("div");
+                    userElement.classList.add("contact");
+                    userElement.setAttribute("data-user-id", user.id);
+                    userElement.addEventListener("click", function() {
+                        // Handle click event to open chat with the selected user
+                        const recipientId = this.getAttribute("data-user-id");
+                        openChatWithUser(recipientId);
+                    });
+
+                    // Create profile picture element
+                    const profilePicture = document.createElement("img");
+                    profilePicture.src = "https://via.placeholder.com/136x136"; // Placeholder image
+                    userElement.appendChild(profilePicture);
+
+                    // Create username element
+                    const username = document.createElement("div");
+                    username.textContent = user.username;
+                    userElement.appendChild(username);
+
+                    // Create online indicator element
+                    const onlineIndicator = document.createElement("div");
+                    onlineIndicator.classList.add(user.is_online ? "online-indicator" : "offline-indicator");
+                    userElement.appendChild(onlineIndicator);
+
+                    // Append user element to user list
+                    userList.appendChild(userElement);
+                }
             });
         }
 
-        function sendMessage() {
-            const senderId = document.getElementById("sender").value;
-            const recipientId = document.getElementById("recipient").value;
-            const message = document.getElementById("message").value;
-            const data = {
-                sender_id: senderId,
-                recipient_id: recipientId,
-                message: message
-            };
-            socket.send(JSON.stringify(data));
-            document.getElementById("message").value = ""; // Clear input field
+        // Function to display user info
+        function displayUserInfo() {
+            const userInfo = document.getElementById("user-info");
+            const accessToken = localStorage.getItem("accessToken");
+            if (accessToken) {
+                // Decode the access token to get user info (assuming it's a JWT)
+                const decodedToken = parseJwt(accessToken);
+                if (decodedToken) {
+                    sender_id = decodedToken.user.id;
+                    user_id = decodedToken.user.id;
+                    userInfo.textContent = `Logged in as: ${decodedToken.user.username}`;
+    const onlineSocket = new WebSocket("ws://localhost:8000/ws/"+user_id);
+                     onlineSocket.onopen = function(event) {
+        console.log(user_id+" Online WebSocket connected.");
+
+
+    };
+
+    onlineSocket.onmessage = function(event) {
+        // Handle online status updates
+        const data = JSON.parse(event.data);
+        console.log(data);
+        updateOnlineStatus(data.user_id, data.is_online);
+    };
+
+
+                }
+            } else {
+                window.location.href = "login.html";
+                userInfo.textContent = "Not logged in";
+            }
         }
-    </script>
+
+        // Function to update online status in user list
+        function updateOnlineStatus(userId, isOnline) {
+            // Find the user element with the corresponding user ID
+            const userElement = document.querySelector(`.contact[data-user-id="${userId}"]`);
+            if (userElement) {
+                // Update the online indicator based on the online status
+                const onlineIndicator = userElement.querySelector(".online-indicator");
+                const offlineIndicator = userElement.querySelector(".offline-indicator");
+                if (isOnline) {
+                    onlineIndicator.style.display = "block";
+                    offlineIndicator.style.display = "none";
+                } else {
+                    onlineIndicator.style.display = "none";
+                    offlineIndicator.style.display = "block";
+                }
+            }
+        }
+
+        // Function to handle incoming messages and broadcasts
+        function handleMessage(data) {
+            // Handle incoming messages and broadcasts
+            // Update the message box with the received message
+            const messageBox = document.getElementById("message-box");
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            if (data.sender_id === sender_id) {
+                messageElement.classList.add("sender");
+            }
+            messageElement.innerText = `${data.sender.username}: ${data.message}`;
+            messageBox.appendChild(messageElement);
+            // Scroll to the bottom of the message box
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+
+        // Function to send a message
+        function sendMessage() {
+            // Get recipient ID based on user selection
+            const recipientId = ""; // You need to implement logic to get recipient ID
+            // Get message content from input field
+            const messageContent = document.getElementById("message").value;
+            // Construct message object
+            const message = {
+                sender_id: sender_id, // Assuming sender_id is available
+                recipient_id: recipient_id,
+                message: messageContent
+            };
+            // Send message through message WebSocket connection
+            messageSocket.send(JSON.stringify(message));
+            // Clear input field after sending message
+            document.getElementById("message").value = "";
+        }
+
+
+function openChatWithUser(userId) {
+    recipient_id = userId;
+        // Code to open chat with the selected user
+        console.log("Opening chat with user:", userId);
+
+         messageSocket = new WebSocket("ws://localhost:8000/join/" + sender_id + "/" + recipient_id);
+
+    // Set event handler for when the WebSocket connection is opened
+    messageSocket.onopen = function(event) {
+        console.log("Message WebSocket connected.");
+        // Additional logic can be added here if needed
+    };
+
+    // Set event handler for incoming messages
+    messageSocket.onmessage = function(event) {
+        const messageBox = document.getElementById("message-box");
+        const message = JSON.parse(event.data);
+        console.log(message);
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+
+        // Get the selected sender's ID from the dropdown menu
+        const selectedSenderId = sender_id;
+
+        if (message.sender.id === selectedSenderId) {
+            messageElement.classList.add("sender");
+        }
+
+        messageElement.innerText = `${message.sender.username}: ${message.message}`;
+        messageBox.appendChild(messageElement);
+        // Scroll to the bottom of the message box
+        messageBox.scrollTop = messageBox.scrollHeight;
+    };
+
+    // Set event handler for WebSocket errors
+    messageSocket.onerror = function(event) {
+        console.error("WebSocket error:", event);
+    };
+
+
+    // Log a message to indicate that the chat with the selected user is opened
+    console.log("Opened chat with user:", userId);
+    }
+
+    // Function to parse JWT token
+    function parseJwt(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            console.error("Error parsing JWT token:", e);
+            return null;
+        }
+    }
+
+</script>
 </body>
 </html>

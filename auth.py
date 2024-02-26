@@ -13,7 +13,7 @@ from models import UserModel
 # Load environment variables from .env file
 load_dotenv()
 
-# MongoDB connection settings
+# MongoDB's connection settings
 MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = "chateo"
 USER_COLLECTION = "users"
@@ -24,20 +24,20 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
 class AuthController:
     def __init__(self):
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.client = MongoClient(MONGODB_URL)
         self.db = self.client[DATABASE_NAME]
         self.collection = self.db[USER_COLLECTION]
+
+    @staticmethod
+    def create_access_token(data: dict):
+        to_encode = data.copy()
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode.update({"exp": expire})
+        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        return encoded_jwt
 
     async def get_user_by_email(self, email: str):
         user = self.collection.find_one({"email": email})
