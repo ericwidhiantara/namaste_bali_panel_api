@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -27,6 +28,7 @@ class ChatController:
     def save_message(self, message: MessageModel):
         # Convert MessageModel to dictionary before saving to MongoDB
         message_dict = message.dict()
+        message_dict["id"] = str(uuid.uuid4())
         message_dict["is_read"] = False
         message_dict["created_at"] = int(datetime.now().timestamp())
         message_dict["updated_at"] = int(datetime.now().timestamp())
@@ -35,10 +37,31 @@ class ChatController:
 
     def get_messages(self, sender: str, recipient: str):
         # Fetch messages between user1 and user2 from the database
-        messages = self.collection.find({
+        messages_cursor = self.collection.find({
             "$or": [
                 {"sender_id": sender, "recipient_id": recipient},
                 {"sender_id": recipient, "recipient_id": sender}
             ]
         })
+        # Convert MongoDB cursor to list of dictionaries
+        messages = [item for item in messages_cursor]
+
+        # Convert ObjectId to string representation for each user
+        for message in messages:
+            message.pop("_id", None)
+
+        print("ini messages", messages)
         return messages
+
+    async def get_users(self):
+        users = self.collection.find({})
+        # Convert MongoDB cursor to list of dictionaries
+        user_list = [user for user in users]
+
+        # Convert ObjectId to string representation for each user
+        for user in user_list:
+            user.pop("_id", None)
+            user.pop("password", None)
+
+        # Return the list of users
+        return user_list

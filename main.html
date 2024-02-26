@@ -155,6 +155,32 @@
         });
       }
 
+      async function fetchUserMessages(selectedUserId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/messages?sender_id=${userLoginId}&recipient_id=${selectedUserId}`
+          );
+          const messages = await response.json();
+          renderUserMessages(messages);
+        } catch (error) {
+          console.error("Error fetching user messages:", error);
+        }
+      }
+
+      function renderUserMessages(messages) {
+        chatMessagesElement.innerHTML = ""; // Clear previous messages
+        messages.forEach((message) => {
+          if (
+            message.recipient.id === userLoginId ||
+            message.sender.id == userLoginId
+          ) {
+            displayMessage(`You: ${message.message}`);
+          } else {
+            displayMessage(`${message.sender.username}: ${message.message}`);
+          }
+        });
+      }
+
       function selectUser(user, userElement) {
         if (selectedUser) {
           selectedUserElement.classList.remove("selected");
@@ -178,7 +204,7 @@
         closeWebSocket();
 
         messageSocket = new WebSocket(
-          "ws://localhost:8000/join/" + userLoginId + "/" + selectUser.id
+          "ws://localhost:8000/join/" + userLoginId + "/" + selectedUser.id
         );
 
         // Set event handler for when the WebSocket connection is opened
@@ -222,6 +248,7 @@
 
         // Log a message to indicate that the chat with the selected user is opened
         console.log("Opened chat with user:", selectedUser.username);
+        fetchUserMessages(selectedUser.id); // Fetch messages for the selected user
       }
 
       function sendMessage() {
