@@ -1,104 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Login</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-      }
-      .container {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      h2 {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      input[type="text"],
-      input[type="password"],
-      button {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-        outline: none;
-      }
-      button {
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-        border: none;
-      }
-      button:hover {
-        background-color: #0056b3;
-      }
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f0f0;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+        .container {
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        input[type="text"],
+        input[type="password"],
+        button {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 16px;
+          outline: none;
+        }
+        button {
+          background-color: #007bff;
+          color: #fff;
+          cursor: pointer;
+          border: none;
+        }
+        button:hover {
+          background-color: #0056b3;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Login</h2>
-      <form id="login-form">
-        <input type="text" id="email" name="email" placeholder="Email" />
+</head>
+<body>
+<div class="container">
+    <h2>Login</h2>
+    <form id="login-form">
+        <input type="text" id="email" name="email" placeholder="Email"/>
         <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Password"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
         />
         <button type="submit">Login</button>
-      </form>
-    </div>
+    </form>
+</div>
 
-    <script>
-      document
-        .getElementById("login-form")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
+<script>
+    document
+      .getElementById("login-form")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-          const formData = new FormData();
-          formData.append("email", document.getElementById("email").value);
-          formData.append(
-            "password",
-            document.getElementById("password").value
-          );
+        const formData = new FormData();
+        formData.append("email", document.getElementById("email").value);
+        formData.append(
+          "password",
+          document.getElementById("password").value
+        );
 
-          try {
-            const response = await fetch("http://localhost:8000/login", {
-              method: "POST",
-              body: formData,
-            });
+        try {
+          const response = await fetch("http://localhost:8000/login", {
+            method: "POST",
+            body: formData,
+          });
 
-            if (response.ok) {
-              const data = await response.json();
-              const accessToken = data.access_token;
+          if (response.ok) {
+            const data = await response.json();
+            const accessToken = data.access_token;
 
-              // Save the access token to local storage
-              localStorage.setItem("accessToken", accessToken);
+            // Save the access token to local storage
+            localStorage.setItem("accessToken", accessToken);
 
-              // Redirect to index.html upon successful login
-              window.location.href = "main.html";
-              console.log("Login successful");
-            } else {
-              // Handle login error
-              console.error("Login failed");
-            }
-          } catch (error) {
-            console.error("Error:", error);
+            // Redirect to index.html upon successful login
+            window.location.href = "chat.html";
+            console.log("Login successful");
+          } else {
+            // Handle login error
+            console.error("Login failed");
           }
-        });
-    </script>
-  </body>
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+</script>
+</body>
 </html>
