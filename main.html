@@ -69,6 +69,24 @@
       .selected {
         background-color: #cce5ff !important;
       }
+      .message-box {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+      }
+      .message {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        max-width: 70%;
+      }
+      .message.sender {
+        align-self: flex-end;
+        background-color: #dcf8c6;
+        margin-left: 30%;
+      }
       #userLoginInfo {
         text-align: right;
         padding: 10px;
@@ -170,13 +188,13 @@
       function renderUserMessages(messages) {
         chatMessagesElement.innerHTML = ""; // Clear previous messages
         messages.forEach((message) => {
-          if (
-            message.recipient.id === userLoginId ||
-            message.sender.id == userLoginId
-          ) {
-            displayMessage(`You: ${message.message}`);
+          if (message.sender.id == userLoginId) {
+            displayMessage(true, `You: ${message.message}`);
           } else {
-            displayMessage(`${message.sender.username}: ${message.message}`);
+            displayMessage(
+              false,
+              `${message.sender.username}: ${message.message}`
+            );
           }
         });
       }
@@ -231,9 +249,12 @@
 
             if (message.sender.id === selectedSenderId) {
               messageElement.classList.add("sender");
-              displayMessage(`You: ${message.message}`);
+              displayMessage(true, `You: ${message.message}`);
             } else {
-              displayMessage(`${message.sender.username}: ${message.message}`);
+              displayMessage(
+                false,
+                `${message.sender.username}: ${message.message}`
+              );
             }
 
             // Scroll to the bottom of the message box
@@ -273,9 +294,15 @@
         messageInput.value = "";
       }
 
-      function displayMessage(message) {
+      function displayMessage(isSender, message) {
         const messageElement = document.createElement("div");
         messageElement.textContent = message;
+        messageElement.classList.add("message"); // Add a class for styling
+        messageElement.classList.add("message-box"); // Add a class for styling
+        if (isSender) {
+          messageElement.classList.add("sender");
+        }
+
         chatMessagesElement.appendChild(messageElement);
         // Scroll to the bottom of the chat messages
         chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;

@@ -52,16 +52,3 @@ class ChatController:
 
         print("ini messages", messages)
         return messages
-
-    async def get_users(self):
-        users = self.collection.find({})
-        # Convert MongoDB cursor to list of dictionaries
-        user_list = [user for user in users]
-
-        # Convert ObjectId to string representation for each user
-        for user in user_list:
-            user.pop("_id", None)
-            user.pop("password", None)
-
-        # Return the list of users
-        return user_list
