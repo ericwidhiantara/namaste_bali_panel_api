@@ -152,7 +152,15 @@ async def login(email: str = Form(...), password: str = Form(...)):
 @app.get("/users")
 async def get_users():
     users = await auth_handler.get_users()
+
     return users
+
+
+@app.get("/users/last_message/{user_id}")
+async def get_last_message(user_id: str):
+    last_message = await chat_controller.get_last_message(user_id)
+
+    return last_message
 
 
 @app.get("/messages")
@@ -172,6 +180,8 @@ async def get_messages(sender_id: str, recipient_id: str):
 
         message["sender"] = sender_data
         message["recipient"] = recipient_data
+        message["last_message"] = recipient_data
+
     print("ini messages", messages)
     return messages
 
