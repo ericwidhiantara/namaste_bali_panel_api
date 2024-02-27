@@ -52,3 +52,17 @@ class ChatController:
 
         print("ini messages", messages)
         return messages
+
+    async def get_last_message(self, sender, recipient):
+        message = self.collection.find_one({"$or": [
+            {"sender_id": sender, "recipient_id": recipient},
+            {"sender_id": recipient, "recipient_id": sender}
+        ]},
+            sort=[('timestamp', -1)])
+
+        if message:
+            message.pop("_id", None)
+
+            return message
+        else:
+            return None
