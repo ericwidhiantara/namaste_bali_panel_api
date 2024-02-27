@@ -19,6 +19,15 @@ chat_controller = ChatController()
 
 connections: List[WebSocket] = []
 
+# Initialize the set to store active users
+active_users = []
+
+# Store active connections
+active_connections = {}
+
+# Store connected clients
+clients: Dict[str, WebSocket] = {}
+
 
 class MyMiddleware(BaseHTTPMiddleware):
     async def dispatch(
@@ -40,39 +49,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"]
 )
-
-# Initialize the set to store active users
-active_users = []
-
-# Store active connections
-active_connections = {}
-
-# @app.websocket("/ws/{user_id}")
-# async def websocket_endpoint(websocket: WebSocket, user_id: str):
-#     await websocket.accept()
-#     active_connections[user_id] = websocket
-#
-#     try:
-#         while True:
-#             # Wait for incoming message
-#             data = await websocket.receive_text()
-#             # Split message to get recipient, sender, and message content
-#             recipient, sender, message = data.split(":", 2)
-#             # Check if recipient is connected
-#             if recipient in active_connections:
-#                 # Send message to recipient
-#                 await active_connections[recipient].send_text(f"Message from {sender}: {message}")
-#             else:
-#                 # If recipient is not connected, handle accordingly
-#                 await websocket.send_text(f"Recipient {recipient} is not connected")
-#     except Exception as e:
-#         print(f"An error occurred: {e}")
-#     finally:
-#         # Remove connection when client disconnects
-#         del active_connections[user_id]
-
-# Store connected clients
-clients: Dict[str, WebSocket] = {}
 
 
 @app.websocket("/ws/{client_id}")
