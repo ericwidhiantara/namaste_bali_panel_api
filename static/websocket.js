@@ -16,7 +16,11 @@ messageInput.addEventListener("keypress", function (event) {
 
 async function fetchUsers() {
   try {
-    const response = await fetch("http://localhost:8000/users");
+    const response = await fetch("http://localhost:8000/users", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
     const users = await response.json();
     renderUserList(users);
     const onlineSocket = new WebSocket("ws://localhost:8000/ws/" + userLoginId);
@@ -83,6 +87,11 @@ async function fetchUserMessages(selectedUserId) {
   try {
     const response = await fetch(
       `http://localhost:8000/messages?sender_id=${userLoginId}&recipient_id=${selectedUserId}`
+      , {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }
     );
     const messages = await response.json();
     renderUserMessages(messages);
