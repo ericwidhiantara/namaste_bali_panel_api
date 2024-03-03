@@ -63,7 +63,7 @@ async def get_me(user: SystemUser = Depends(get_current_user)):
     return user
 
 
-@app.get("/users", summary='Get all users')
+@app.get("/users", summary='Get all users', response_model=List[UserOut])
 async def get_users(user: UserOut = Depends(get_current_user)):
     users = await auth_controller.get_users(user)
     for i in users:
