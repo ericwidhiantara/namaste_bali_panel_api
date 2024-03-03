@@ -71,28 +71,10 @@ async def get_users(user: UserOut = Depends(get_current_user)):
     return users
 
 
-@app.get("/messages")
+@app.get("/messages", summary='Get all messages between the current user and another user',
+         response_model=List[MessageModel])
 async def get_messages(recipient_id: str, user: SystemUser = Depends(get_current_user)):
-    messages_old = chat_controller.get_messages(str(user.id), recipient_id)
-
-    print("ini messages_old", messages_old)
-    messages = [item for item in messages_old]
-
-    # Convert ObjectId to string representation for each user
-    for message in messages:
-        message.pop("_id", None)
-        sender_data = await auth_controller.get_user_by_id(message["sender_id"])
-        sender_data.pop("_id", None)
-
-        recipient_data = await auth_controller.get_user_by_id(message["recipient_id"])
-        recipient_data.pop("_id", None)
-
-        message["sender"] = sender_data
-        message["recipient"] = recipient_data
-        message["last_message"] = recipient_data
-
-    print("ini messages", messages)
-    return messages
+    return await chat_controller.get_messages(user.id, recipient_id)
 
 
 @app.websocket("/ws/{client_id}")
