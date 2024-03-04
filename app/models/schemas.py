@@ -7,7 +7,7 @@ class TokenSchema(BaseModel):
     refresh_token: str
 
 
-class UserAuth(BaseModel):
+class FormUserModel(BaseModel):
     first_name: str = Form(..., description="user first name")
     last_name: str = Form(..., description="user last name")
     username: str = Form(..., description="user username")

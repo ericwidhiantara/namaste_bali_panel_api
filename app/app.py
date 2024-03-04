@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.controller.auth_controller import AuthController
 from app.controller.chat_controller import ChatController
 from app.controller.websocket_controller import WebSocketController
-from app.models.schemas import UserAuth, TokenSchema, SystemUser, MessageModel, UserModel
+from app.models.schemas import FormUserModel, TokenSchema, SystemUser, MessageModel, UserModel
 from app.utils.deps import get_current_user
 
 connections: List[WebSocket] = []
@@ -49,7 +49,7 @@ async def docs():
 
 
 @app.post('/register', summary="Create new user", response_model=UserModel)
-async def register(data: UserAuth = Depends()):
+async def register(data: FormUserModel = Depends()):
     return await auth_controller.register(data)
 
 

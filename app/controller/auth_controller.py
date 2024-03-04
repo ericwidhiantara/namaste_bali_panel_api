@@ -7,7 +7,7 @@ from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from pymongo import MongoClient
 
-from app.models.schemas import UserAuth, SystemUser, UserModel
+from app.models.schemas import FormUserModel, SystemUser, UserModel
 from app.utils.deps import get_current_user
 from app.utils.utils import (
     create_access_token,
@@ -30,7 +30,7 @@ class AuthController:
         self.db = self.client[DATABASE_NAME]
         self.collection = self.db[USER_COLLECTION]
 
-    async def register(self, data: UserAuth):
+    async def register(self, data: FormUserModel):
         # Check if user already exists
         if self.collection.find_one({"email": data.email}):
             raise HTTPException(
