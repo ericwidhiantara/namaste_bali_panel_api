@@ -48,8 +48,8 @@ async def docs():
     return RedirectResponse(url='/docs')
 
 
-@app.post('/signup', summary="Create new user", response_model=UserOut)
-async def register(data: UserAuth):
+@app.post('/register', summary="Create new user", response_model=UserOut)
+async def register(data: UserAuth = Depends()):
     return await auth_controller.register(data)
 
 
