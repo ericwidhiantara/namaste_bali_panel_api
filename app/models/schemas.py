@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from fastapi import Form
+from pydantic import BaseModel, EmailStr
 
 
 class TokenSchema(BaseModel):
@@ -6,14 +7,12 @@ class TokenSchema(BaseModel):
     refresh_token: str
 
 
-class TokenPayload(BaseModel):
-    sub: str = None
-    exp: int = None
-
-
 class UserAuth(BaseModel):
-    email: str = Field(..., description="user email")
-    password: str = Field(..., min_length=5, max_length=24, description="user password")
+    first_name: str = Form(..., description="user first name")
+    last_name: str = Form(..., description="user last name")
+    username: str = Form(..., description="user username")
+    email: EmailStr = Form(..., description="user email")
+    password: str = Form(..., min_length=6, max_length=24, description="user password")
 
 
 class UserOut(BaseModel):
@@ -27,6 +26,12 @@ class UserOut(BaseModel):
 
 class SystemUser(UserOut):
     password: str
+
+
+class TokenPayload(BaseModel):
+    sub: str = None
+    exp: int = None
+    user: UserOut = None
 
 
 class MessageModel(BaseModel):
