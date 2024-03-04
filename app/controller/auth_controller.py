@@ -38,6 +38,12 @@ class AuthController:
                 detail="User with this email already exists"
             )
 
+        if self.collection.find_one({"username": data.username}):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this username already exists"
+            )
+
         # Create new user
         user = {
             "id": str(uuid.uuid4()),
