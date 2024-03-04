@@ -4,7 +4,7 @@ from typing import Union, Any
 from jose import jwt
 from passlib.context import CryptContext
 
-from app.models.schemas import UserOut
+from app.models.schemas import UserModel
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
@@ -29,7 +29,7 @@ def create_access_token(user: dict, subject: Union[str, Any], expires_delta: tim
     else:
         expires_delta = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    to_encode = {"exp": expires_delta, "sub": str(subject), "user": dict(UserOut(**user))}
+    to_encode = {"exp": expires_delta, "sub": str(subject), "user": dict(UserModel(**user))}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
     return encoded_jwt
 
@@ -40,6 +40,6 @@ def create_refresh_token(user: dict, subject: Union[str, Any], expires_delta: ti
     else:
         expires_delta = datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
 
-    to_encode = {"exp": expires_delta, "sub": str(subject), "user": dict(UserOut(**user))}
+    to_encode = {"exp": expires_delta, "sub": str(subject), "user": dict(UserModel(**user))}
     encoded_jwt = jwt.encode(to_encode, JWT_REFRESH_SECRET_KEY, ALGORITHM)
     return encoded_jwt

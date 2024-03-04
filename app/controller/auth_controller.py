@@ -7,7 +7,7 @@ from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from pymongo import MongoClient
 
-from app.models.schemas import UserAuth, SystemUser, UserOut
+from app.models.schemas import UserAuth, SystemUser, UserModel
 from app.utils.deps import get_current_user
 from app.utils.utils import (
     create_access_token,
@@ -77,7 +77,7 @@ class AuthController:
     async def get_me(self: SystemUser = Depends(get_current_user)):
         return self
 
-    async def get_users(self, user: UserOut = Depends(get_current_user)):
+    async def get_users(self, user: UserModel = Depends(get_current_user)):
         print("data user", user.email)
         users = self.collection.find({"email": {"$ne": user.email}}, {'_id': 0})
         print("ini users", users)

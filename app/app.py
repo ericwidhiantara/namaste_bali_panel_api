@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.controller.auth_controller import AuthController
 from app.controller.chat_controller import ChatController
 from app.controller.websocket_controller import WebSocketController
-from app.models.schemas import UserAuth, TokenSchema, SystemUser, MessageModel, UserOut
+from app.models.schemas import UserAuth, TokenSchema, SystemUser, MessageModel, UserModel
 from app.utils.deps import get_current_user
 
 connections: List[WebSocket] = []
@@ -48,7 +48,7 @@ async def docs():
     return RedirectResponse(url='/docs')
 
 
-@app.post('/register', summary="Create new user", response_model=UserOut)
+@app.post('/register', summary="Create new user", response_model=UserModel)
 async def register(data: UserAuth = Depends()):
     return await auth_controller.register(data)
 
@@ -58,13 +58,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return await auth_controller.login(form_data)
 
 
-@app.get('/me', summary='Get details of currently logged in user', response_model=UserOut)
+@app.get('/me', summary='Get details of currently logged in user', response_model=UserModel)
 async def get_me(user: SystemUser = Depends(get_current_user)):
     return user
 
 
-@app.get("/users", summary='Get all users', response_model=List[UserOut])
-async def get_users(user: UserOut = Depends(get_current_user)):
+@app.get("/users", summary='Get all users', response_model=List[UserModel])
+async def get_users(user: UserModel = Depends(get_current_user)):
     users = await auth_controller.get_users(user)
     for i in users:
         i["last_message"] = await chat_controller.get_last_message(user.id, i["id"])

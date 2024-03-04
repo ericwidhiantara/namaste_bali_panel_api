@@ -15,7 +15,7 @@ class UserAuth(BaseModel):
     password: str = Form(..., min_length=6, max_length=24, description="user password")
 
 
-class UserOut(BaseModel):
+class UserModel(BaseModel):
     id: str
     email: str
     first_name: str
@@ -24,14 +24,14 @@ class UserOut(BaseModel):
     is_active: bool
 
 
-class SystemUser(UserOut):
+class SystemUser(UserModel):
     password: str
 
 
 class TokenPayload(BaseModel):
     sub: str = None
     exp: int = None
-    user: UserOut = None
+    user: UserModel = None
 
 
 class MessageModel(BaseModel):
