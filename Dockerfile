@@ -1,4 +1,3 @@
-```
 # Use a base image
 FROM python:3.9
 
@@ -19,4 +18,3 @@ COPY . .
 
 # Run the command to start your application
 CMD [ "python", "main.py" ]
-```
