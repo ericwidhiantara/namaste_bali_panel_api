@@ -2,7 +2,6 @@ import os
 import uuid
 from datetime import datetime
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from pymongo import MongoClient
@@ -15,7 +14,6 @@ from app.utils.utils import (
     verify_password, get_hashed_password
 )
 
-load_dotenv()
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = "chateo"
