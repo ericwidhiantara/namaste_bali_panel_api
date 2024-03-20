@@ -2,14 +2,12 @@ import os
 import uuid
 from datetime import datetime
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, Depends
 from pymongo import MongoClient
 
 from app.models.schemas import SystemUser, MessageModel
 from app.utils.deps import get_current_user
 
-load_dotenv()
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = "chateo"
