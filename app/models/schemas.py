@@ -1,7 +1,10 @@
+from dataclasses import dataclass
 from typing import TypeVar, Generic
 
 from fastapi import Form
 from pydantic import BaseModel, EmailStr
+
+from app.utils.helper import form_body
 
 M = TypeVar("M", bound=BaseModel)
 
@@ -22,6 +25,7 @@ class TokenSchema(BaseModel):
     refresh_token: str
 
 
+@form_body
 class FormUserModel(BaseModel):
     first_name: str = Form(..., description="user first name")
     last_name: str = Form(..., description="user last name")
@@ -52,3 +56,20 @@ class TokenPayload(BaseModel):
     sub: str = None
     exp: int = None
     user: UserModel = None
+
+
+@form_body
+class FormPortfolioModel(BaseModel):
+    title: str = Form(..., description="portfolio title")
+    description: str = Form(..., description="portfolio description")
+
+    date_started: str = Form(..., description="portfolio date started")
+    date_finished: str = Form(..., description="portfolio date finished")
+
+
+class PortfolioModel(BaseModel):
+    id: str
+    title: str
+    description: str
+    created_at: int
+    updated_at: int
