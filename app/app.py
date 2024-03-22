@@ -1,6 +1,6 @@
-from typing import List, Annotated
+from typing import List
 
-from fastapi import FastAPI, Depends, Form
+from fastapi import FastAPI, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.middleware.cors import CORSMiddleware
