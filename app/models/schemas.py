@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, List
 
-from fastapi import Form
+from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr
 
 from app.utils.helper import form_body
@@ -33,6 +33,7 @@ class FormUserModel(BaseModel):
     email: EmailStr = Form(..., description="user email")
     password: str = Form(..., min_length=6, max_length=24, description="user password")
     phone: str = Form(..., description="user phone number")
+    picture: UploadFile = Form(..., description="user picture")
 
 
 class UserModel(BaseModel):
@@ -62,7 +63,7 @@ class TokenPayload(BaseModel):
 class FormPortfolioModel(BaseModel):
     title: str = Form(..., description="portfolio title")
     description: str = Form(..., description="portfolio description")
-
+    images: List[UploadFile] = Form(..., description="portfolio picture")
     date_started: str = Form(..., description="portfolio date started")
     date_finished: str = Form(..., description="portfolio date finished")
 
@@ -71,5 +72,8 @@ class PortfolioModel(BaseModel):
     id: str
     title: str
     description: str
+    images: List[str]
+    date_started: str
+    date_finished: str
     created_at: int
     updated_at: int
