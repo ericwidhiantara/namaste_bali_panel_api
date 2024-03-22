@@ -9,6 +9,7 @@ from pymongo import MongoClient
 from app.handler.http_handler import CustomHttpException
 from app.models.schemas import FormUserModel, SystemUser
 from app.utils.deps import get_current_user
+from app.utils.helper import save_picture
 from app.utils.utils import (
     create_access_token,
     create_refresh_token,
@@ -30,6 +31,8 @@ class AuthController:
         self.collection = self.db[USER_COLLECTION]
 
     async def register(self, data: FormUserModel):
+        print("ini data", data)
+
         # Check if user already exists
         if self.collection.find_one({"email": data.email}):
             raise CustomHttpException(
@@ -42,6 +45,16 @@ class AuthController:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 message="User with this username already exists"
             )
+        print("data picture", data.picture)
+        print("data picture", data.picture.filename)
+
+        # Save picture
+        picture_path = save_picture(data.picture)
+        if picture_path == "File not allowed":
+            raise CustomHttpException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                message="File not allowed"
+            )
 
         # Create new user
         user = {
@@ -52,6 +65,7 @@ class AuthController:
             "email": data.email,
             "password": get_hashed_password(data.password),
             "phone": data.phone,
+            "picture": picture_path,
             "created_at": int(datetime.now().timestamp()),
             "updated_at": int(datetime.now().timestamp()),
             "is_active": False
