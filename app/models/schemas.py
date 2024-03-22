@@ -1,5 +1,20 @@
+from typing import TypeVar, Generic
+
 from fastapi import Form
 from pydantic import BaseModel, EmailStr
+
+M = TypeVar("M", bound=BaseModel)
+
+
+class Meta(BaseModel):
+    code: int = 200
+    message: str = "OK"
+    error: bool = False
+
+
+class BaseResp(BaseModel, Generic[M]):
+    meta: Meta = Meta()
+    data: M = None  # support any object
 
 
 class TokenSchema(BaseModel):
@@ -13,6 +28,7 @@ class FormUserModel(BaseModel):
     username: str = Form(..., description="user username")
     email: EmailStr = Form(..., description="user email")
     password: str = Form(..., min_length=6, max_length=24, description="user password")
+    phone: str = Form(..., description="user phone number")
 
 
 class UserModel(BaseModel):
@@ -21,7 +37,11 @@ class UserModel(BaseModel):
     first_name: str
     last_name: str
     username: str
+    phone: str
+    picture: str
     is_active: bool
+    created_at: int
+    updated_at: int
 
 
 class SystemUser(UserModel):
@@ -32,10 +52,3 @@ class TokenPayload(BaseModel):
     sub: str = None
     exp: int = None
     user: UserModel = None
-
-
-class MessageModel(BaseModel):
-    sender_id: str
-    recipient_id: str
-    message: str
-    is_read: bool = False
