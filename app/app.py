@@ -1,13 +1,15 @@
-from typing import List
+from typing import List, Annotated
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Form
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.middleware.cors import CORSMiddleware
 
 from app.controller.auth_controller import AuthController
+from app.controller.portfolio_controller import PortfolioController
 from app.handler.http_handler import CustomHttpException, custom_exception
-from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp
+from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
+    FormPortfolioModel
 from app.utils.deps import get_current_user
 
 app = FastAPI()
@@ -15,6 +17,7 @@ app.add_exception_handler(CustomHttpException, custom_exception)
 # app.add_exception_handler(404, not_found_handler)
 
 auth_controller = AuthController()
+project_controller = PortfolioController()
 
 
 class WebsocketController:
@@ -35,23 +38,26 @@ async def docs():
     return RedirectResponse(url='/docs')
 
 
-@app.post('/register', summary="Create new user", response_model=UserModel)
+@app.post('/register', summary="Create new user", response_model=BaseResp[UserModel])
 async def register(data: FormUserModel = Depends()):
-    return await auth_controller.register(data)
+    print("ini data di register", data)
+    result = await auth_controller.register(data)
+    return BaseResp[UserModel](data=result)
 
 
-@app.post('/login', summary="Create access and refresh tokens for user", response_model=TokenSchema)
+@app.post('/login', summary="Create access and refresh tokens for user", response_model=BaseResp[TokenSchema])
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    return await auth_controller.login(form_data)
+    result = await auth_controller.login(form_data)
+    return BaseResp[TokenSchema](data=result)
 
 
 @app.get('/me', summary='Get details of currently logged in user', response_model=BaseResp[SystemUser])
 async def get_me(user: SystemUser = Depends(get_current_user)):
-
     return BaseResp[SystemUser](data=user)
 
 
-@app.get("/users", summary='Get all users', response_model=BaseResp[List[UserModel]], dependencies=[Depends(get_current_user)])
+@app.get("/users", summary='Get all users', response_model=BaseResp[List[UserModel]],
+         dependencies=[Depends(get_current_user)])
 async def get_users():
     users = await auth_controller.get_users()
 
@@ -61,3 +67,23 @@ async def get_users():
             message="No users found"
         )
     return BaseResp[List[UserModel]](data=users)
+
+
+@app.post('/projects/new', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],
+          dependencies=[Depends(get_current_user)])
+async def create_project(data: FormPortfolioModel = Depends()):
+    res = await project_controller.create_project(data)
+    return BaseResp[PortfolioModel](data=res)
+
+
+@app.get("/projects", summary='Get all portfolio', response_model=BaseResp[List[PortfolioModel]],
+         dependencies=[Depends(get_current_user)])
+async def get_projects():
+    result = await project_controller.get_projects()
+
+    if not result:
+        raise CustomHttpException(
+            status_code=404,
+            message="No projects found"
+        )
+    return BaseResp[List[PortfolioModel]](data=result)
