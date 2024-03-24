@@ -67,6 +67,16 @@ class FormPortfolioModel(BaseModel):
     date_finished: str = Form(..., description="portfolio date finished")
 
 
+@form_body
+class FormEditPortfolioModel(BaseModel):
+    id: str = Form(..., description="portfolio id")
+    title: str = Form(..., description="portfolio title")
+    description: str = Form(..., description="portfolio description")
+    images: List[UploadFile] = Form(..., description="portfolio picture")
+    date_started: str = Form(..., description="portfolio date started")
+    date_finished: str = Form(..., description="portfolio date finished")
+
+
 class PortfolioModel(BaseModel):
     id: str
     title: str
