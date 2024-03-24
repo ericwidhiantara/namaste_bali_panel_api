@@ -103,3 +103,11 @@ async def delete_project(data: FormDeletePortfolioModel = Depends()):
     await project_controller.delete_project(data)
 
     return BaseResp(meta=Meta(message="Delete portfolio successfully"))
+
+
+@app.delete('/projects/image', summary="Delete single portfolio image", response_model=BaseResp,
+            dependencies=[Depends(get_current_user)])
+async def delete_single_iamge(data: FormDeletePortfolioModel = Depends()):
+    project_controller.delete_single_image(data)
+
+    return BaseResp(meta=Meta(message="Delete single image successfully"))
