@@ -82,13 +82,19 @@ class FormDeletePortfolioModel(BaseModel):
     id: str = Form(..., description="portfolio id")
 
 
+class PortfolioImageModel(BaseModel):
+    id: str
+    project_id: str
+    image_path: str
+
+
 class PortfolioModel(BaseModel):
     id: str
     title: str
     slug: str
     description: str
-    images: List[str]
     date_started: str
     date_finished: str
+    images: List[PortfolioImageModel]
     created_at: int
     updated_at: int
