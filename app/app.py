@@ -9,7 +9,7 @@ from app.controller.auth_controller import AuthController
 from app.controller.portfolio_controller import PortfolioController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
-    FormPortfolioModel
+    FormPortfolioModel, FormEditPortfolioModel
 from app.utils.deps import get_current_user
 
 app = FastAPI()
@@ -69,13 +69,6 @@ async def get_users():
     return BaseResp[List[UserModel]](data=users)
 
 
-@app.post('/projects/new', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],
-          dependencies=[Depends(get_current_user)])
-async def create_project(data: FormPortfolioModel = Depends()):
-    res = await project_controller.create_project(data)
-    return BaseResp[PortfolioModel](data=res)
-
-
 @app.get("/projects", summary='Get all portfolio', response_model=BaseResp[List[PortfolioModel]],
          dependencies=[Depends(get_current_user)])
 async def get_projects():
@@ -87,3 +80,17 @@ async def get_projects():
             message="No projects found"
         )
     return BaseResp[List[PortfolioModel]](data=result)
+
+
+@app.post('/projects', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],
+          dependencies=[Depends(get_current_user)])
+async def create_project(data: FormPortfolioModel = Depends()):
+    res = await project_controller.create_project(data)
+    return BaseResp[PortfolioModel](data=res)
+
+
+@app.patch('/projects', summary="Update portfolio", response_model=BaseResp[PortfolioModel],
+           dependencies=[Depends(get_current_user)])
+async def edit_project(data: FormEditPortfolioModel = Depends()):
+    res = await project_controller.edit_project(data)
+    return BaseResp[PortfolioModel](data=res)
