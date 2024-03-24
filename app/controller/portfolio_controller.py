@@ -6,8 +6,8 @@ from fastapi import FastAPI, status
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
-from app.models.schemas import FormPortfolioModel, FormEditPortfolioModel
-from app.utils.helper import save_picture
+from app.models.schemas import FormPortfolioModel, FormEditPortfolioModel, FormDeletePortfolioModel
+from app.utils.helper import save_picture, delete_picture
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -93,3 +93,25 @@ class PortfolioController:
         self.collection.update_one({"id": data.id}, {"$set": project})
         updated = self.collection.find_one({"id": data.id})
         return updated
+
+    async def delete_project(self, data: FormDeletePortfolioModel):
+
+        item = self.collection.find_one({"id": data.id})
+        if not item:
+            raise CustomHttpException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                message="Project not found"
+            )
+
+        if item["images"] is not None:
+            for file in item["images"]:
+                res = delete_picture(file)
+                if not res:
+                    raise CustomHttpException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        message="Failed to delete picture"
+                    )
+
+        # Delete project from MongoDB
+        self.collection.delete_one({"id": data.id})
+        return None

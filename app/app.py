@@ -9,7 +9,7 @@ from app.controller.auth_controller import AuthController
 from app.controller.portfolio_controller import PortfolioController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
-    FormPortfolioModel, FormEditPortfolioModel, Meta
+    FormPortfolioModel, FormEditPortfolioModel, Meta, FormDeletePortfolioModel
 from app.utils.deps import get_current_user
 
 app = FastAPI()
@@ -42,13 +42,13 @@ async def docs():
 async def register(data: FormUserModel = Depends()):
     print("ini data di register", data)
     result = await auth_controller.register(data)
-    return BaseResp[UserModel](meta=Meta(message="Register success"),  data=result)
+    return BaseResp[UserModel](meta=Meta(message="Register success"), data=result)
 
 
 @app.post('/login', summary="Create access and refresh tokens for user", response_model=BaseResp[TokenSchema])
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     result = await auth_controller.login(form_data)
-    return BaseResp[TokenSchema](meta=Meta(message="Login success"),  data=result)
+    return BaseResp[TokenSchema](meta=Meta(message="Login success"), data=result)
 
 
 @app.get('/me', summary='Get details of currently logged in user', response_model=BaseResp[SystemUser])
@@ -79,7 +79,7 @@ async def get_projects():
             status_code=404,
             message="No projects found"
         )
-    return BaseResp[List[PortfolioModel]](meta=Meta(message="Get all portfolio successfuly"),  data=result)
+    return BaseResp[List[PortfolioModel]](meta=Meta(message="Get all portfolio successfuly"), data=result)
 
 
 @app.post('/projects', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],
@@ -95,3 +95,11 @@ async def edit_project(data: FormEditPortfolioModel = Depends()):
     res = await project_controller.edit_project(data)
 
     return BaseResp[PortfolioModel](meta=Meta(message="Update portfolio successfully"), data=res)
+
+
+@app.delete('/projects', summary="Delete portfolio", response_model=BaseResp,
+            dependencies=[Depends(get_current_user)])
+async def delete_project(data: FormDeletePortfolioModel = Depends()):
+    await project_controller.delete_project(data)
+
+    return BaseResp(meta=Meta(message="Delete portfolio successfully"))
