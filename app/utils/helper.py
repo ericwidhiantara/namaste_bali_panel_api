@@ -35,3 +35,10 @@ def save_picture(file):
     with open(file_path, "wb") as f:
         f.write(file.file.read())
     return file_path
+
+
+def delete_picture(file_path):
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return True
+    return False
