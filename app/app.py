@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.middleware.cors import CORSMiddleware
@@ -9,7 +9,7 @@ from app.controller.auth_controller import AuthController
 from app.controller.portfolio_controller import PortfolioController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
-    FormPortfolioModel, FormEditPortfolioModel, Meta, FormDeletePortfolioModel
+    FormPortfolioModel, FormEditPortfolioModel, Meta, FormDeletePortfolioModel, PortfolioPaginationModel
 from app.utils.deps import get_current_user
 
 app = FastAPI()
@@ -80,6 +80,18 @@ async def get_projects():
             message="No projects found"
         )
     return BaseResp[List[PortfolioModel]](meta=Meta(message="Get all portfolio successfuly"), data=result)
+
+
+@app.get("/projects/pagination", summary='Get all portfolio', response_model=BaseResp[PortfolioPaginationModel], )
+async def get_projects(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0)):
+    result = await project_controller.get_projects_pagination(page, page_size)
+
+    if result["projects"] is None:
+        raise CustomHttpException(
+            status_code=404,
+            message="No projects found"
+        )
+    return BaseResp[PortfolioPaginationModel](meta=Meta(message="Get all portfolio successfuly"), data=dict(result))
 
 
 @app.post('/projects', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],

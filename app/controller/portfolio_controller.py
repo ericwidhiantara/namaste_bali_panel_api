@@ -50,6 +50,52 @@ class PortfolioController:
 
         return [project for project in items]
 
+    async def get_projects_pagination(self, page_number=1, page_size=10):
+        # Calculate the skip value based on page_number and page_size
+        skip = (page_number - 1) * page_size
+
+        # Fetch projects from the database with pagination
+        projects = self.collection.find().skip(skip).limit(page_size)
+
+        items = []
+        # Iterate the projects
+        for project in projects:
+            images = self.image_collection.find({"project_id": project["id"]})
+
+            # set the images to the project
+            project["images"] = []
+            project.pop("_id")
+
+            # iterate the images
+            for image in images:
+                image.pop("_id")
+                # set the image path to aws s3 url
+                image["image_path"] = get_object_url(image["image_path"])
+                # append the image to the project
+                project["images"].append(image)
+
+            # append the project to the items
+            items.append(project)
+            print("items", items)
+
+        # Count total projects for pagination
+        total_projects = self.collection.count_documents({})
+
+        # Calculate total pages
+        total_pages = (total_projects + page_size - 1) // page_size
+
+        # Prepare JSON response
+        response = {
+            "page_number": page_number,
+            "page_size": page_size,
+            "total": total_projects,
+            "total_pages": total_pages,
+            "projects": items
+        }
+
+        print("ini response", response)
+        return response
+
     async def create_project(self, data: FormPortfolioModel):
         # iterate the data.picture
         uploaded_pictures = []

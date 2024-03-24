@@ -98,3 +98,11 @@ class PortfolioModel(BaseModel):
     images: List[PortfolioImageModel]
     created_at: int
     updated_at: int
+
+
+class PortfolioPaginationModel(BaseModel):
+    page_number: int
+    page_size: int
+    total: int
+    total_pages: int
+    projects: List[PortfolioModel]
