@@ -31,9 +31,9 @@ class PortfolioController:
     async def create_project(self, data: FormPortfolioModel):
         # iterate the data.picture
         uploaded_pictures = []
-
+        upload_dir = "/projects/"+data.title.lower().replace(" ", "-")
         for file in data.images:
-            res = save_picture(file)
+            res = save_picture(upload_dir,file)
             if res == "File not allowed":
                 raise CustomHttpException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -45,6 +45,7 @@ class PortfolioController:
         project = {
             "id": str(uuid.uuid4()),
             "title": data.title,
+            "slug": data.title.lower().replace(" ", "-"),
             "description": data.description,
             "date_started": data.date_started,
             "date_finished": data.date_finished,
@@ -67,10 +68,11 @@ class PortfolioController:
             )
         # iterate the data.picture
         uploaded_pictures = []
+        upload_dir = "/projects/"+data.title.lower().replace(" ", "-")
 
         if data.images is not None:
             for file in data.images:
-                res = save_picture(file)
+                res = save_picture(upload_dir, file)
                 if res == "File not allowed":
                     raise CustomHttpException(
                         status_code=status.HTTP_400_BAD_REQUEST,
@@ -80,7 +82,9 @@ class PortfolioController:
 
         # Create new project
         project = {
+
             "title": data.title if data.title else item["title"],
+            "slug": data.title.lower().replace(" ", "-"),
             "description": data.description if data.description else item["description"],
             "date_started": data.date_started if data.date_started else item["date_started"],
             "date_finished": data.date_finished if data.date_finished else item["date_finished"],

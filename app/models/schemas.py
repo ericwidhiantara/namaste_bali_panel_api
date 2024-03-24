@@ -85,6 +85,7 @@ class FormDeletePortfolioModel(BaseModel):
 class PortfolioModel(BaseModel):
     id: str
     title: str
+    slug: str
     description: str
     images: List[str]
     date_started: str
