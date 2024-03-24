@@ -180,3 +180,14 @@ class PortfolioController:
         # Delete project from MongoDB
         self.collection.delete_one({"id": data.id})
         return None
+
+    def delete_single_image(self, data: FormDeletePortfolioModel):
+        item = self.image_collection.find_one({"id": data.id})
+        if not item:
+            raise CustomHttpException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                message="Image not found"
+            )
+
+        self.image_collection.delete_one({"id": data.id})
+        return None
