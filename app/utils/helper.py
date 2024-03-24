@@ -21,16 +21,16 @@ def allowed_file(file):
     return '.' in file and file.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def save_picture(file):
+def save_picture(directory, file):
     if file.filename == "":
         return ""
 
     if not allowed_file(file.filename):
         return "File extension not allowed"
 
-    if not os.path.exists(UPLOAD_DIRECTORY):
-        os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-    file_path = os.path.join(UPLOAD_DIRECTORY, file.filename)
+    if not os.path.exists(UPLOAD_DIRECTORY + directory):
+        os.makedirs(UPLOAD_DIRECTORY+directory, exist_ok=True)
+    file_path = os.path.join(UPLOAD_DIRECTORY+directory, file.filename)
     print("file path", file_path)
     with open(file_path, "wb") as f:
         f.write(file.file.read())
