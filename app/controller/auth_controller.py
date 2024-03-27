@@ -9,7 +9,7 @@ from pymongo import MongoClient
 from app.handler.http_handler import CustomHttpException
 from app.models.schemas import FormUserModel, SystemUser
 from app.utils.deps import get_current_user
-from app.utils.helper import save_picture
+from app.utils.helper import save_picture, get_object_url
 from app.utils.utils import (
     create_access_token,
     create_refresh_token,
@@ -52,15 +52,16 @@ class AuthController:
 
         # Save picture
         picture_path = save_picture(upload_dir, data.picture)
-        if picture_path == "File not allowed":
+        if picture_path == "File extension not allowed":
             raise CustomHttpException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                message="File not allowed"
+                message="File extension not allowed"
             )
 
+        id = str(uuid.uuid4())
         # Create new user
         user = {
-            "id": str(uuid.uuid4()),
+            "id": id,
             "first_name": data.first_name,
             "last_name": data.last_name,
             "username": data.username,
@@ -75,7 +76,12 @@ class AuthController:
 
         # Insert user into MongoDB
         self.collection.insert_one(user)
-        return user
+
+        data = self.collection.find_one({"id": id})
+
+        data["picture"] = get_object_url(data["picture"])
+
+        return data
 
     async def login(self, form_data: OAuth2PasswordRequestForm = Depends()):
         # Check if user exists
@@ -85,6 +91,9 @@ class AuthController:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 message="Incorrect email or password"
             )
+
+        user["picture"] = get_object_url(user["picture"])
+
         return {
             "access_token": create_access_token(dict(user), user["email"]),
             "refresh_token": create_refresh_token(dict(user), user['email']),
