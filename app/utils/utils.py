@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 
 from app.models.schemas import UserModel
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 30 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = "50f1c5f3c8d8d5633ca20f62bff5214b433475528d8cbafddd6f102d36ce72b5"  # should be kept secret
