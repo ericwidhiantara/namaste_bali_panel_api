@@ -11,6 +11,7 @@ from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
     FormPortfolioModel, FormEditPortfolioModel, Meta, FormDeletePortfolioModel, PortfolioPaginationModel
 from app.utils.deps import get_current_user
+from app.utils.helper import get_object_url
 
 app = FastAPI()
 app.add_exception_handler(CustomHttpException, custom_exception)
@@ -54,6 +55,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @app.get('/me', summary='Get details of currently logged in user', response_model=BaseResp[SystemUser])
 async def get_me(user: SystemUser = Depends(get_current_user)):
     return BaseResp[SystemUser](meta=Meta(message="Get user login data successfully"), data=user)
+
+
+@app.get('/get-picture', summary='Get picture of currently logged in user', response_model=str,
+         dependencies=[Depends(get_current_user)])
+async def get_picture(user: SystemUser = Depends(get_current_user)):
+    return get_object_url(user.picture)
 
 
 @app.get("/users", summary='Get all users', response_model=BaseResp[List[UserModel]],

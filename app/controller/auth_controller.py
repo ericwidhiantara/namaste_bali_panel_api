@@ -58,10 +58,10 @@ class AuthController:
                 message="File extension not allowed"
             )
 
-        id = str(uuid.uuid4())
+        user_id = str(uuid.uuid4())
         # Create new user
         user = {
-            "id": id,
+            "id": user_id,
             "first_name": data.first_name,
             "last_name": data.last_name,
             "username": data.username,
@@ -77,7 +77,7 @@ class AuthController:
         # Insert user into MongoDB
         self.collection.insert_one(user)
 
-        data = self.collection.find_one({"id": id})
+        data = self.collection.find_one({"id": user_id})
 
         data["picture"] = get_object_url(data["picture"])
 
