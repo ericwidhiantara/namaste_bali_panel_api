@@ -50,12 +50,17 @@ class PortfolioController:
 
         return [project for project in items]
 
-    async def get_projects_pagination(self, page_number=1, page_size=10):
+    async def get_projects_pagination(self, page_number=1, page_size=10, search=None):
         # Calculate the skip value based on page_number and page_size
         skip = (page_number - 1) * page_size
 
         # Fetch projects from the database with pagination
-        projects = self.collection.find().skip(skip).limit(page_size)
+        projects = self.collection.find({
+            '$or': [
+                {'title': {'$regex': search, '$options': 'i'}},
+                {'description': {'$regex': search, '$options': 'i'}}
+            ]
+        }).skip(skip).limit(page_size)
 
         items = []
         # Iterate the projects

@@ -83,8 +83,8 @@ async def get_projects():
 
 
 @app.get("/projects/pagination", summary='Get all portfolio', response_model=BaseResp[PortfolioPaginationModel], )
-async def get_projects(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0)):
-    result = await project_controller.get_projects_pagination(page, page_size)
+async def get_projects(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0), search: str = Query(None)):
+    result = await project_controller.get_projects_pagination(page, page_size, search)
 
     if result["projects"] is None:
         raise CustomHttpException(
