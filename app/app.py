@@ -1,9 +1,14 @@
+from collections import defaultdict
 from typing import List
 
 from fastapi import FastAPI, Depends, Query
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette import status
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 from app.controller.auth_controller import AuthController
 from app.controller.portfolio_controller import PortfolioController
@@ -21,8 +26,27 @@ auth_controller = AuthController()
 project_controller = PortfolioController()
 
 
-class WebsocketController:
-    pass
+@app.exception_handler(RequestValidationError)
+async def custom_form_validation_error(_, exc):
+    reformatted_message = defaultdict(list)
+    for pydantic_error in exc.errors():
+        loc, msg = pydantic_error["loc"], pydantic_error["msg"]
+        filtered_loc = loc[1:] if loc[0] in ("body", "query", "path") else loc
+        field_string = ".".join(filtered_loc)  # nested fields with dot-notation
+        reformatted_message[field_string].append(msg)
+
+    print("reformatted_message", reformatted_message)
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder(
+
+            {"meta": {
+                "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "message": "Validation error",
+                "error": True
+            }, "data": reformatted_message}
+        ),
+    )
 
 
 app.add_middleware(
@@ -89,7 +113,8 @@ async def get_projects():
     return BaseResp[List[PortfolioModel]](meta=Meta(message="Get all portfolio successfuly"), data=result)
 
 
-@app.get("/projects/pagination", summary='Get all portfolio', response_model=BaseResp[PortfolioPaginationModel], )
+@app.get("/projects/pagination", summary='Get all portfolio', response_model=BaseResp[PortfolioPaginationModel],
+         dependencies=[Depends(get_current_user)])
 async def get_projects(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0), search: str = Query(None)):
     result = await project_controller.get_projects_pagination(page, page_size, search)
 
