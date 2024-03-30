@@ -31,7 +31,7 @@ class PortfolioController:
         items = []
         # Iterate the projects
         for project in projects:
-            images = self.image_collection.find({"project_id": project["id"]})
+            images = self.image_collection.find({"project_id": project["id"]}).sort('created_at', -1)
 
             # set the images to the project
             project["images"] = []
@@ -60,7 +60,7 @@ class PortfolioController:
                 {'title': {'$regex': search, '$options': 'i'}},
                 {'description': {'$regex': search, '$options': 'i'}}
             ]
-        }).skip(skip).limit(page_size)
+        }).skip(skip).limit(page_size).sort('created_at', -1)
 
         items = []
         # Iterate the projects
