@@ -1,8 +1,9 @@
 import os
 import uuid
 from datetime import datetime
+from typing import Optional, List
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, UploadFile, Form
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
@@ -101,11 +102,12 @@ class PortfolioController:
         print("ini response", response)
         return response
 
-    async def create_project(self, data: FormPortfolioModel):
+    async def create_project(self, data: FormPortfolioModel,
+                             images: List[UploadFile] = Form(..., description="portfolio picture")):
         # iterate the data.picture
         uploaded_pictures = []
         upload_dir = "/projects/" + data.title.lower().replace(" ", "-")
-        for file in data.images:
+        for file in images:
             res = save_picture(upload_dir, file)
             if res == "File not allowed":
                 raise CustomHttpException(
@@ -151,7 +153,8 @@ class PortfolioController:
 
         return item
 
-    async def edit_project(self, data: FormEditPortfolioModel):
+    async def edit_project(self, data: FormEditPortfolioModel,
+                           images: Optional[List[UploadFile]] = Form(None, description="portfolio picture")):
 
         item = self.collection.find_one({"id": data.id})
         if not item:
@@ -163,8 +166,8 @@ class PortfolioController:
         uploaded_pictures = []
         upload_dir = "/projects/" + data.title.lower().replace(" ", "-")
 
-        if data.images is not None:
-            for file in data.images:
+        if images is not None:
+            for file in images:
                 res = save_picture(upload_dir, file)
                 if res == "File extension not allowed":
                     raise CustomHttpException(

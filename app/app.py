@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List
 
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, Query, UploadFile, Form
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
@@ -53,7 +53,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"]
 )
 
@@ -128,15 +128,17 @@ async def get_projects(page: int = Query(1, gt=0), page_size: int = Query(10, gt
 
 @app.post('/projects', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],
           dependencies=[Depends(get_current_user)])
-async def create_project(data: FormPortfolioModel = Depends()):
-    res = await project_controller.create_project(data)
+async def create_project(data: FormPortfolioModel = Depends(),
+                         images: List[UploadFile] = Form(..., description="portfolio picture")):
+    res = await project_controller.create_project(data, images)
     return BaseResp[PortfolioModel](meta=Meta(message="Create portfolio successfully"), data=res)
 
 
 @app.patch('/projects', summary="Update portfolio", response_model=BaseResp[PortfolioModel],
            dependencies=[Depends(get_current_user)])
-async def edit_project(data: FormEditPortfolioModel = Depends()):
-    res = await project_controller.edit_project(data)
+async def edit_project(data: FormEditPortfolioModel = Depends(),
+                       images: List[UploadFile] = Form(None, description="portfolio picture")):
+    res = await project_controller.edit_project(data, images)
 
     return BaseResp[PortfolioModel](meta=Meta(message="Update portfolio successfully"), data=res)
 
