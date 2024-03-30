@@ -103,7 +103,7 @@ class AuthController:
         return self
 
     async def get_users(self):
-        users = self.collection.find()
+        users = self.collection.find().sort('created_at', -1)
         print("ini users", users)
         return [user for user in users]
 
