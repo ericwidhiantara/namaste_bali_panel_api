@@ -143,17 +143,17 @@ async def edit_project(data: FormEditPortfolioModel = Depends(),
     return BaseResp[PortfolioModel](meta=Meta(message="Update portfolio successfully"), data=res)
 
 
-@app.delete('/projects', summary="Delete portfolio", response_model=BaseResp,
+@app.delete('/projects/{project_id}', summary="Delete portfolio", response_model=BaseResp,
             dependencies=[Depends(get_current_user)])
-async def delete_project(data: FormDeletePortfolioModel = Depends()):
-    await project_controller.delete_project(data)
+async def delete_project(project_id: str):
+    await project_controller.delete_project(project_id)
 
     return BaseResp(meta=Meta(message="Delete portfolio successfully"))
 
 
-@app.delete('/projects/image', summary="Delete single portfolio image", response_model=BaseResp,
+@app.delete('/projects/image/{image_id}', summary="Delete single portfolio image", response_model=BaseResp,
             dependencies=[Depends(get_current_user)])
-async def delete_single_iamge(data: FormDeletePortfolioModel = Depends()):
-    project_controller.delete_single_image(data)
+async def delete_single_image(image_id: str):
+    project_controller.delete_single_image(image_id)
 
     return BaseResp(meta=Meta(message="Delete single image successfully"))
