@@ -213,16 +213,16 @@ class PortfolioController:
 
         return item
 
-    async def delete_project(self, data: FormDeletePortfolioModel):
+    async def delete_project(self, project_id: str):
 
-        item = self.collection.find_one({"id": data.id})
+        item = self.collection.find_one({"id": project_id})
         if not item:
             raise CustomHttpException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 message="Project not found"
             )
 
-        images = self.image_collection.find({"project_id": data.id})
+        images = self.image_collection.find({"id": project_id})
 
         if images is not None:
             # print the image
@@ -232,16 +232,16 @@ class PortfolioController:
                 self.image_collection.delete_one({"id": image["id"]})
 
         # Delete project from MongoDB
-        self.collection.delete_one({"id": data.id})
+        self.collection.delete_one({"id": project_id})
         return None
 
-    def delete_single_image(self, data: FormDeletePortfolioModel):
-        item = self.image_collection.find_one({"id": data.id})
+    def delete_single_image(self, image_id: str):
+        item = self.image_collection.find_one({"id": image_id})
         if not item:
             raise CustomHttpException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 message="Image not found"
             )
 
-        self.image_collection.delete_one({"id": data.id})
+        self.image_collection.delete_one({"id": image_id})
         return None
