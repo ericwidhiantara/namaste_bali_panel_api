@@ -7,7 +7,7 @@ from fastapi import FastAPI, status, UploadFile, Form
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
-from app.models.schemas import FormPortfolioModel, FormEditPortfolioModel, FormDeletePortfolioModel
+from app.models.schemas import FormPortfolioModel, FormEditPortfolioModel
 from app.utils.helper import save_picture, get_object_url
 
 # Connect to MongoDB
