@@ -35,7 +35,7 @@ async def custom_form_validation_error(_, exc):
         field_string = ".".join(filtered_loc)  # nested fields with dot-notation
         reformatted_message[field_string].append(msg)
 
-    print("reformatted_message", reformatted_message)
+    print("ini reformatted_message", reformatted_message)
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder(
