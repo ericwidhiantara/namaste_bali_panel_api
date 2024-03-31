@@ -85,7 +85,12 @@ class PortfolioController:
             print("items", items)
 
         # Count total projects for pagination
-        total_projects = self.collection.count_documents({})
+        total_projects = self.collection.count_documents({
+            '$or': [
+                {'title': {'$regex': search, '$options': 'i'}},
+                {'description': {'$regex': search, '$options': 'i'}}
+            ]
+        })
 
         # Calculate total pages
         total_pages = (total_projects + page_size - 1) // page_size
