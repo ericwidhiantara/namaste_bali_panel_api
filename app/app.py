@@ -14,7 +14,7 @@ from app.controller.auth_controller import AuthController
 from app.controller.portfolio_controller import PortfolioController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
-    FormPortfolioModel, FormEditPortfolioModel, Meta, FormDeletePortfolioModel, PortfolioPaginationModel
+    FormPortfolioModel, FormEditPortfolioModel, Meta,  PortfolioPaginationModel
 from app.utils.deps import get_current_user
 from app.utils.helper import get_object_url
 

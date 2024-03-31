@@ -75,11 +75,6 @@ class FormEditPortfolioModel(BaseModel):
     date_finished: str = Form(..., description="portfolio date finished")
 
 
-@form_body
-class FormDeletePortfolioModel(BaseModel):
-    id: str = Form(..., description="portfolio id")
-
-
 class PortfolioImageModel(BaseModel):
     id: str
     project_id: str
