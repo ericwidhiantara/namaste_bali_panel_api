@@ -11,10 +11,11 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from app.controller.auth_controller import AuthController
-from app.controller.portfolio_controller import PortfolioController
+from app.controller.destination_controller import DestinationController
 from app.handler.http_handler import CustomHttpException, custom_exception
-from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, PortfolioModel, \
-    FormPortfolioModel, FormEditPortfolioModel, Meta,  PortfolioPaginationModel
+from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, Meta
+from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel
+
 from app.utils.deps import get_current_user
 from app.utils.helper import get_object_url
 
@@ -23,7 +24,7 @@ app.add_exception_handler(CustomHttpException, custom_exception)
 # app.add_exception_handler(404, not_found_handler)
 
 auth_controller = AuthController()
-project_controller = PortfolioController()
+destination_controller = DestinationController()
 
 
 @app.exception_handler(RequestValidationError)
@@ -100,60 +101,37 @@ async def get_users():
     return BaseResp[List[UserModel]](meta=Meta(message="Get all user successfully"), data=users)
 
 
-@app.get("/projects", summary='Get all portfolio', response_model=BaseResp[List[PortfolioModel]],
+@app.get("/destinations", summary='Get all destination', response_model=BaseResp[List[DestinationModel]],
          dependencies=[Depends(get_current_user)])
-async def get_projects():
-    result = await project_controller.get_projects()
+async def get_destinations():
+    result = await destination_controller.get_destinations()
 
     if not result:
         raise CustomHttpException(
             status_code=404,
-            message="No projects found"
+            message="No destinations found"
         )
-    return BaseResp[List[PortfolioModel]](meta=Meta(message="Get all portfolio successfuly"), data=result)
+    return BaseResp[List[DestinationModel]](meta=Meta(message="Get all destination successfuly"), data=result)
 
 
-@app.get("/projects/pagination", summary='Get all portfolio', response_model=BaseResp[PortfolioPaginationModel],
-         dependencies=[Depends(get_current_user)])
-async def get_projects(page: int = Query(1, gt=0), page_size: int = Query(10, gt=0), search: str = Query(None)):
-    result = await project_controller.get_projects_pagination(page, page_size, search)
-
-    if result["projects"] is None:
-        raise CustomHttpException(
-            status_code=404,
-            message="No projects found"
-        )
-    return BaseResp[PortfolioPaginationModel](meta=Meta(message="Get all portfolio successfuly"), data=dict(result))
-
-
-@app.post('/projects', summary="Create new portfolio", response_model=BaseResp[PortfolioModel],
+@app.post('/destinations', summary="Create new destination", response_model=BaseResp[DestinationModel],
           dependencies=[Depends(get_current_user)])
-async def create_project(data: FormPortfolioModel = Depends(),
-                         images: List[UploadFile] = Form(..., description="portfolio picture")):
-    res = await project_controller.create_project(data, images)
-    return BaseResp[PortfolioModel](meta=Meta(message="Create portfolio successfully"), data=res)
+async def create_destination(data: FormDestinationModel = Depends(), ):
+    res = await destination_controller.create_destination(data)
+    return BaseResp[DestinationModel](meta=Meta(message="Create destination successfully"), data=res)
 
 
-@app.patch('/projects', summary="Update portfolio", response_model=BaseResp[PortfolioModel],
+@app.patch('/destinations', summary="Update destination", response_model=BaseResp[DestinationModel],
            dependencies=[Depends(get_current_user)])
-async def edit_project(data: FormEditPortfolioModel = Depends(),
-                       images: List[UploadFile] = Form(None, description="portfolio picture")):
-    res = await project_controller.edit_project(data, images)
+async def edit_destination(data: FormEditDestinationModel = Depends()):
+    res = await destination_controller.edit_destination(data)
 
-    return BaseResp[PortfolioModel](meta=Meta(message="Update portfolio successfully"), data=res)
+    return BaseResp[DestinationModel](meta=Meta(message="Update destination successfully"), data=res)
 
 
-@app.delete('/projects/{project_id}', summary="Delete portfolio", response_model=BaseResp,
+@app.delete('/destinations/{destination_id}', summary="Delete destination", response_model=BaseResp,
             dependencies=[Depends(get_current_user)])
-async def delete_project(project_id: str):
-    await project_controller.delete_project(project_id)
+async def delete_destination(destination_id: str):
+    await destination_controller.delete_destination(destination_id)
 
-    return BaseResp(meta=Meta(message="Delete portfolio successfully"))
-
-
-@app.delete('/projects/image/{image_id}', summary="Delete single portfolio image", response_model=BaseResp,
-            dependencies=[Depends(get_current_user)])
-async def delete_single_image(image_id: str):
-    project_controller.delete_single_image(image_id)
-
-    return BaseResp(meta=Meta(message="Delete single image successfully"))
+    return BaseResp(meta=Meta(message="Delete destination successfully"))
