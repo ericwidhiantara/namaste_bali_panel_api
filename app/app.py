@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List
 
-from fastapi import FastAPI, Depends, Query, UploadFile, Form
+from fastapi import FastAPI, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
@@ -12,10 +12,11 @@ from starlette.responses import JSONResponse
 
 from app.controller.auth_controller import AuthController
 from app.controller.destination_controller import DestinationController
+from app.controller.team_controller import TeamController
 from app.handler.http_handler import CustomHttpException, custom_exception
-from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, Meta
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel
-
+from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel
+from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, Meta
 from app.utils.deps import get_current_user
 from app.utils.helper import get_object_url
 
@@ -25,6 +26,7 @@ app.add_exception_handler(CustomHttpException, custom_exception)
 
 auth_controller = AuthController()
 destination_controller = DestinationController()
+team_controller = TeamController()
 
 
 @app.exception_handler(RequestValidationError)
@@ -135,3 +137,39 @@ async def delete_destination(destination_id: str):
     await destination_controller.delete_destination(destination_id)
 
     return BaseResp(meta=Meta(message="Delete destination successfully"))
+
+
+@app.get("/teams", summary='Get all team', response_model=BaseResp[List[TeamModel]],
+         dependencies=[Depends(get_current_user)])
+async def get_teams():
+    result = await team_controller.get_teams()
+
+    if not result:
+        raise CustomHttpException(
+            status_code=404,
+            message="No teams found"
+        )
+    return BaseResp[List[TeamModel]](meta=Meta(message="Get all team successfuly"), data=result)
+
+
+@app.post('/teams', summary="Create new team", response_model=BaseResp[TeamModel],
+          dependencies=[Depends(get_current_user)])
+async def create_team(data: FormTeamModel = Depends(), ):
+    res = await team_controller.create_team(data)
+    return BaseResp[TeamModel](meta=Meta(message="Create team successfully"), data=res)
+
+
+@app.patch('/teams', summary="Update team", response_model=BaseResp[TeamModel],
+           dependencies=[Depends(get_current_user)])
+async def edit_team(data: FormEditTeamModel = Depends()):
+    res = await team_controller.edit_team(data)
+
+    return BaseResp[TeamModel](meta=Meta(message="Update team successfully"), data=res)
+
+
+@app.delete('/teams/{team_id}', summary="Delete team", response_model=BaseResp,
+            dependencies=[Depends(get_current_user)])
+async def delete_team(team_id: str):
+    await team_controller.delete_team(team_id)
+
+    return BaseResp(meta=Meta(message="Delete team successfully"))
