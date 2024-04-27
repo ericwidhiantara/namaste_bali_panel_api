@@ -1,14 +1,13 @@
 import os
 import uuid
 from datetime import datetime
-from typing import Optional, List
 
-from fastapi import FastAPI, status, UploadFile, Form
+from fastapi import FastAPI, status
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
 from app.models.destinations import FormDestinationModel, FormEditDestinationModel
-from app.utils.helper import save_picture, get_object_url
+from app.utils.helper import save_picture
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -73,7 +72,7 @@ class DestinationController:
         if not item:
             raise CustomHttpException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                message="Project not found"
+                message="Destination not found"
             )
 
         upload_dir = "/destinations/" + data.title.lower().replace(" ", "-")
@@ -111,7 +110,7 @@ class DestinationController:
         if not item:
             raise CustomHttpException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                message="Project not found"
+                message="Destination not found"
             )
 
         # Delete destination from MongoDB
