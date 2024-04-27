@@ -16,7 +16,8 @@ from app.controller.team_controller import TeamController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel
 from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel
-from app.models.schemas import FormUserModel, TokenSchema, SystemUser, UserModel, BaseResp, Meta
+from app.models.schemas import TokenSchema, BaseResp, Meta
+from app.models.users import FormUserModel, SystemUser, UserModel
 from app.utils.deps import get_current_user
 from app.utils.helper import get_object_url
 

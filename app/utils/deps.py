@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
-from app.models.schemas import TokenPayload, SystemUser
+from app.models.users import TokenPayload, SystemUser
 from app.utils.utils import (
     ALGORITHM,
     JWT_SECRET_KEY

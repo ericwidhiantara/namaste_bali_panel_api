@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
-from app.models.schemas import FormUserModel, SystemUser
+from app.models.users import FormUserModel, SystemUser
 from app.utils.deps import get_current_user
 from app.utils.helper import save_picture, get_object_url
 from app.utils.utils import (
