@@ -4,7 +4,7 @@ from typing import Union, Any
 from jose import jwt
 from passlib.context import CryptContext
 
-from app.models.schemas import UserModel
+from app.models.users import UserModel
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 30 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
