@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import Form, UploadFile
 from pydantic import BaseModel
@@ -74,3 +74,11 @@ class TeamModel(BaseModel):
     address: str
     created_at: int
     updated_at: int
+
+
+class TeamPaginationModel(BaseModel):
+    page_number: int
+    page_size: int
+    total: int
+    total_pages: int
+    teams: List[TeamModel]
