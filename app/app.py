@@ -13,10 +13,13 @@ from starlette.responses import JSONResponse
 from app.controller.auth_controller import AuthController
 from app.controller.destination_controller import DestinationController
 from app.controller.team_controller import TeamController
+from app.controller.user_controller import UserController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel, \
     DestinationPaginationModel
 from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel, TeamPaginationModel
+from app.models.users import UserModel, FormUserModel, FormEditUserModel, \
+    UserPaginationModel
 from app.models.schemas import TokenSchema, BaseResp, Meta
 from app.models.users import FormUserModel, SystemUser, UserModel
 from app.utils.deps import get_current_user
@@ -29,6 +32,7 @@ app.add_exception_handler(CustomHttpException, custom_exception)
 auth_controller = AuthController()
 destination_controller = DestinationController()
 team_controller = TeamController()
+user_controller = UserController()
 
 
 @app.exception_handler(RequestValidationError)
@@ -199,5 +203,54 @@ async def edit_team(data: FormEditTeamModel = Depends()):
             dependencies=[Depends(get_current_user)])
 async def delete_team(team_id: str):
     await team_controller.delete_team(team_id)
+
+    return BaseResp(meta=Meta(message="Delete team successfully"))
+
+
+@app.get("/users", summary='Get all team', response_model=BaseResp[UserPaginationModel],
+         dependencies=[Depends(get_current_user)])
+async def get_users(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
+    result = await user_controller.get_users_pagination(page, limit, search)
+
+    if result["users"] is None:
+        raise CustomHttpException(
+            status_code=404,
+            message="No users found"
+        )
+    return BaseResp[UserPaginationModel](meta=Meta(message="Get all user successfuly"), data=dict(result))
+
+
+@app.get("/users/list", summary='Get all user list', response_model=BaseResp[List[UserModel]],
+         dependencies=[Depends(get_current_user)])
+async def get_users():
+    result = await user_controller.get_users()
+
+    if not result:
+        raise CustomHttpException(
+            status_code=404,
+            message="No users found"
+        )
+    return BaseResp[List[UserModel]](meta=Meta(message="Get all user list successfuly"), data=result)
+
+
+@app.post('/users', summary="Create new user", response_model=BaseResp[UserModel],
+          dependencies=[Depends(get_current_user)])
+async def create_user(data: FormUserModel = Depends(), ):
+    res = await user_controller.create_user(data)
+    return BaseResp[UserModel](meta=Meta(message="Create user successfully"), data=res)
+
+
+@app.patch('/users', summary="Update user", response_model=BaseResp[UserModel],
+           dependencies=[Depends(get_current_user)])
+async def edit_user(data: FormEditUserModel = Depends()):
+    res = await user_controller.edit_user(data)
+
+    return BaseResp[UserModel](meta=Meta(message="Update user successfully"), data=res)
+
+
+@app.delete('/users/{user_id}', summary="Delete user", response_model=BaseResp,
+            dependencies=[Depends(get_current_user)])
+async def delete_user(user_id: str):
+    await user_controller.delete_user(user_id)
 
     return BaseResp(meta=Meta(message="Delete team successfully"))
