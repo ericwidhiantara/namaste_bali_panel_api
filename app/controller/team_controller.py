@@ -36,6 +36,54 @@ class TeamController:
 
         return [team for team in items]
 
+    async def get_teams_pagination(self, page_number=1, page_size=10, search=None):
+        # Calculate the skip value based on page_number and page_size
+        skip = (page_number - 1) * page_size
+
+        # Fetch teams from the database with pagination
+        teams = self.collection.find({
+            '$or': [
+                {'name': {'$regex': search, '$options': 'i'}},
+                {'whatsapp': {'$regex': search, '$options': 'i'}},
+                {'email': {'$regex': search, '$options': 'i'}},
+                {'address': {'$regex': search, '$options': 'i'}},
+            ]
+        }).skip(skip).limit(page_size).sort('created_at', -1)
+
+        items = []
+        # Iterate the teams
+        for project in teams:
+            # set the images to the project
+            project.pop("_id")
+
+            # append the project to the items
+            items.append(project)
+            print("items", items)
+
+        # Count total teams for pagination
+        total_teams = self.collection.count_documents({
+            '$or': [
+                {'title': {'$regex': search, '$options': 'i'}},
+                {'description': {'$regex': search, '$options': 'i'}}
+            ]
+        })
+
+        # Calculate total pages
+        total_pages = (total_teams + page_size - 1) // page_size
+
+        # Prepare JSON response
+        response = {
+            "page_number": page_number,
+            "page_size": page_size,
+            "total": total_teams,
+            "total_pages": total_pages,
+            "teams": items
+        }
+
+        print("ini response", response)
+        return response
+
+
     async def create_team(self, data: FormTeamModel):
         # iterate the data.image
         upload_dir = "/teams/" + data.name.lower().replace(" ", "-")
