@@ -207,7 +207,7 @@ async def delete_team(team_id: str):
     return BaseResp(meta=Meta(message="Delete team successfully"))
 
 
-@app.get("/users", summary='Get all team', response_model=BaseResp[UserPaginationModel],
+@app.get("/users", summary='Get all user', response_model=BaseResp[UserPaginationModel],
          dependencies=[Depends(get_current_user)])
 async def get_users(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await user_controller.get_users_pagination(page, limit, search)
@@ -253,4 +253,4 @@ async def edit_user(data: FormEditUserModel = Depends()):
 async def delete_user(user_id: str):
     await user_controller.delete_user(user_id)
 
-    return BaseResp(meta=Meta(message="Delete team successfully"))
+    return BaseResp(meta=Meta(message="Delete user successfully"))
