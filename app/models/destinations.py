@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import Form, UploadFile
 from pydantic import BaseModel
 
@@ -37,3 +39,11 @@ class DestinationModel(BaseModel):
     image: str
     created_at: int
     updated_at: int
+
+
+class DestinationPaginationModel(BaseModel):
+    page_number: int
+    page_size: int
+    total: int
+    total_pages: int
+    destinations: List[DestinationModel]
