@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import Form, UploadFile
 from pydantic import BaseModel
@@ -23,7 +23,7 @@ class FormEditDestinationModel:
             id: str = Form(..., description="destination id"),
             title: str = Form(..., description="destination title"),
             description: str = Form(..., description="destination description"),
-            image: UploadFile = Form(..., description="image description"),
+            image: Optional[UploadFile] = Form(None, description="image description"),
     ):
         self.id = id
         self.title = title
@@ -36,7 +36,7 @@ class DestinationModel(BaseModel):
     title: str
     slug: str
     description: str
-    image: str
+    image: Optional[str]
     created_at: int
     updated_at: int
 
