@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
 from app.models.destinations import FormDestinationModel, FormEditDestinationModel
-from app.utils.helper import save_picture
+from app.utils.helper import save_picture, get_object_url
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -30,6 +30,8 @@ class DestinationController:
         # Iterate the destinations
         for destination in destinations:
             # append the destination to the items
+            destination["image"] = get_object_url(destination["image"])
+
             items.append(destination)
 
         print("ini destinations", destinations)
@@ -50,12 +52,13 @@ class DestinationController:
 
         items = []
         # Iterate the destinations
-        for project in destinations:
-            # set the images to the project
-            project.pop("_id")
+        for destination in destinations:
+            # set the images to the destination
+            destination.pop("_id")
+            destination["image"] = get_object_url(destination["image"])
 
-            # append the project to the items
-            items.append(project)
+            # append the destination to the items
+            items.append(destination)
             print("items", items)
 
         # Count total destinations for pagination
@@ -120,22 +123,25 @@ class DestinationController:
                 message="Destination not found"
             )
 
-        upload_dir = "/destinations/" + data.title.lower().replace(" ", "-")
+        picture_path = None
 
-        # Save picture
-        picture_path = save_picture(upload_dir, data.image)
-        if picture_path == "File extension not allowed":
-            raise CustomHttpException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                message="File extension not allowed"
-            )
+        if data.image:
+            # Save picture
+            upload_dir = "/orders/" + data.id.lower().replace(" ", "-")
+
+            picture_path = save_picture(upload_dir, data.image)
+            if picture_path == "File extension not allowed":
+                raise CustomHttpException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    message="File extension not allowed"
+                )
 
         # Create new destination
         destination = {
             "title": data.title if data.title else item["title"],
             "slug": data.title.lower().replace(" ", "-"),
             "description": data.description if data.description else item["description"],
-            "image": picture_path,
+            "image": picture_path if picture_path else item["image"],
             "updated_at": int(datetime.now().timestamp()),
         }
 
