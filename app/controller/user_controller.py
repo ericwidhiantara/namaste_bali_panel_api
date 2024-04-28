@@ -111,6 +111,7 @@ class UserController:
             "picture": picture_path,
             "created_at": int(datetime.now().timestamp()),
             "updated_at": int(datetime.now().timestamp()),
+            "is_active": True
         }
         # Insert user into MongoDB
         self.collection.insert_one(user)
