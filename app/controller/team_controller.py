@@ -63,8 +63,10 @@ class TeamController:
         # Count total teams for pagination
         total_teams = self.collection.count_documents({
             '$or': [
-                {'title': {'$regex': search, '$options': 'i'}},
-                {'description': {'$regex': search, '$options': 'i'}}
+                {'name': {'$regex': search, '$options': 'i'}},
+                {'whatsapp': {'$regex': search, '$options': 'i'}},
+                {'email': {'$regex': search, '$options': 'i'}},
+                {'address': {'$regex': search, '$options': 'i'}},
             ]
         })
 
