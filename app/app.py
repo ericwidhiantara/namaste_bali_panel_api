@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
@@ -14,7 +14,8 @@ from app.controller.auth_controller import AuthController
 from app.controller.destination_controller import DestinationController
 from app.controller.team_controller import TeamController
 from app.handler.http_handler import CustomHttpException, custom_exception
-from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel
+from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel, \
+    DestinationPaginationModel
 from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel
 from app.models.schemas import TokenSchema, BaseResp, Meta
 from app.models.users import FormUserModel, SystemUser, UserModel
@@ -104,7 +105,20 @@ async def get_users():
     return BaseResp[List[UserModel]](meta=Meta(message="Get all user successfully"), data=users)
 
 
-@app.get("/destinations", summary='Get all destination', response_model=BaseResp[List[DestinationModel]],
+@app.get("/destinations", summary='Get all destination', response_model=BaseResp[DestinationPaginationModel],
+         dependencies=[Depends(get_current_user)])
+async def get_destinations(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
+    result = await destination_controller.get_destinations_pagination(page, limit, search)
+
+    if result["destinations"] is None:
+        raise CustomHttpException(
+            status_code=404,
+            message="No destinations found"
+        )
+    return BaseResp[DestinationPaginationModel](meta=Meta(message="Get all destination successfuly"), data=dict(result))
+
+
+@app.get("/destinations/list", summary='Get all destination', response_model=BaseResp[List[DestinationModel]],
          dependencies=[Depends(get_current_user)])
 async def get_destinations():
     result = await destination_controller.get_destinations()
