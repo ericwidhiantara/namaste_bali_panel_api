@@ -126,8 +126,7 @@ async def get_destinations(page: int = Query(1, gt=0), limit: int = Query(10, gt
     return BaseResp[DestinationPaginationModel](meta=Meta(message="Get all destination successfuly"), data=dict(result))
 
 
-@app.get("/destinations/list", summary='Get all destination list', response_model=BaseResp[List[DestinationModel]],
-         dependencies=[Depends(get_current_user)])
+@app.get("/destinations/list", summary='Get all destination list', response_model=BaseResp[List[DestinationModel]])
 async def get_destinations():
     result = await destination_controller.get_destinations()
 
@@ -175,8 +174,7 @@ async def get_teams(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), se
     return BaseResp[TeamPaginationModel](meta=Meta(message="Get all team successfuly"), data=dict(result))
 
 
-@app.get("/teams/list", summary='Get all team list', response_model=BaseResp[List[TeamModel]],
-         dependencies=[Depends(get_current_user)])
+@app.get("/teams/list", summary='Get all team list', response_model=BaseResp[List[TeamModel]])
 async def get_teams():
     result = await team_controller.get_teams()
 
