@@ -36,6 +36,51 @@ class DestinationController:
 
         return [destination for destination in items]
 
+    async def get_destinations_pagination(self, page_number=1, page_size=10, search=None):
+        # Calculate the skip value based on page_number and page_size
+        skip = (page_number - 1) * page_size
+
+        # Fetch destinations from the database with pagination
+        destinations = self.collection.find({
+            '$or': [
+                {'title': {'$regex': search, '$options': 'i'}},
+                {'description': {'$regex': search, '$options': 'i'}}
+            ]
+        }).skip(skip).limit(page_size).sort('created_at', -1)
+
+        items = []
+        # Iterate the destinations
+        for project in destinations:
+            # set the images to the project
+            project.pop("_id")
+
+            # append the project to the items
+            items.append(project)
+            print("items", items)
+
+        # Count total destinations for pagination
+        total_destinations = self.collection.count_documents({
+            '$or': [
+                {'title': {'$regex': search, '$options': 'i'}},
+                {'description': {'$regex': search, '$options': 'i'}}
+            ]
+        })
+
+        # Calculate total pages
+        total_pages = (total_destinations + page_size - 1) // page_size
+
+        # Prepare JSON response
+        response = {
+            "page_number": page_number,
+            "page_size": page_size,
+            "total": total_destinations,
+            "total_pages": total_pages,
+            "destinations": items
+        }
+
+        print("ini response", response)
+        return response
+
     async def create_destination(self, data: FormDestinationModel):
         # iterate the data.image
         upload_dir = "/destinations/" + data.title.lower().replace(" ", "-")
