@@ -45,7 +45,7 @@ class FormEditTeamModel:
             tiktok: Optional[str] = Form(None, description="team tiktok"),  # Make optional
             role: str = Form(..., description="team role"),
             address: str = Form(..., description="team address"),
-            image: UploadFile = Form(..., description="image description"),
+            image: Optional[UploadFile] = Form(None, description="image description"),
     ):
         self.id = id
         self.name = name
@@ -70,7 +70,7 @@ class TeamModel(BaseModel):
     twitter: Optional[str]
     tiktok: Optional[str]
     role: str
-    image: str
+    image: Optional[str]
     address: str
     created_at: int
     updated_at: int
