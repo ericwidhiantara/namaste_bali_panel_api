@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
 from app.models.teams import FormTeamModel, FormEditTeamModel
-from app.utils.helper import save_picture
+from app.utils.helper import save_picture, get_object_url
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -30,6 +30,8 @@ class TeamController:
         # Iterate the teams
         for team in teams:
             # append the team to the items
+            team["image"] = get_object_url(team["image"])
+
             items.append(team)
 
         print("ini teams", teams)
@@ -52,12 +54,13 @@ class TeamController:
 
         items = []
         # Iterate the teams
-        for project in teams:
-            # set the images to the project
-            project.pop("_id")
+        for team in teams:
+            # set the images to the team
+            team.pop("_id")
+            team["image"] = get_object_url(team["image"])
 
-            # append the project to the items
-            items.append(project)
+            # append the team to the items
+            items.append(team)
             print("items", items)
 
         # Count total teams for pagination
@@ -130,15 +133,18 @@ class TeamController:
                 message="Team not found"
             )
 
-        upload_dir = "/teams/" + data.name.lower().replace(" ", "-")
+        picture_path = None
 
-        # Save picture
-        picture_path = save_picture(upload_dir, data.image)
-        if picture_path == "File extension not allowed":
-            raise CustomHttpException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                message="File extension not allowed"
-            )
+        if data.image:
+            # Save picture
+            upload_dir = "/orders/" + data.id.lower().replace(" ", "-")
+
+            picture_path = save_picture(upload_dir, data.image)
+            if picture_path == "File extension not allowed":
+                raise CustomHttpException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    message="File extension not allowed"
+                )
 
         # Create new team
         team = {
