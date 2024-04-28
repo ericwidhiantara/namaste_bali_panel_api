@@ -85,7 +85,6 @@ class TeamController:
         print("ini response", response)
         return response
 
-
     async def create_team(self, data: FormTeamModel):
         # iterate the data.image
         upload_dir = "/teams/" + data.name.lower().replace(" ", "-")
