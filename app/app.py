@@ -118,7 +118,7 @@ async def get_users():
 async def get_destinations(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await destination_controller.get_destinations_pagination(page, limit, search)
 
-    if result["destinations"] is None or not result["destinations"]:
+    if result["destinations"] is None:
         raise CustomHttpException(
             status_code=404,
             message="No destinations found"
@@ -167,7 +167,7 @@ async def delete_destination(destination_id: str):
 async def get_teams(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await team_controller.get_teams_pagination(page, limit, search)
 
-    if result["teams"] is None or not result["teams"]:
+    if result["teams"] is None:
         raise CustomHttpException(
             status_code=404,
             message="No teams found"
@@ -216,7 +216,7 @@ async def delete_team(team_id: str):
 async def get_users(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await user_controller.get_users_pagination(page, limit, search)
 
-    if result["users"] is None or not result["users"]:
+    if result["users"] is None:
         raise CustomHttpException(
             status_code=404,
             message="No users found"
@@ -266,7 +266,7 @@ async def get_orders(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), s
     result = await order_controller.get_orders_pagination(page, limit, search)
 
     print("ini result", result)
-    if result["orders"] is None or not result["orders"]:
+    if result["orders"] is None:
         raise CustomHttpException(
             status_code=404,
             message="No orders found"
