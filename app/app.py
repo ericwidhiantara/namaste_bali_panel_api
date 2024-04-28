@@ -12,15 +12,18 @@ from starlette.responses import JSONResponse
 
 from app.controller.auth_controller import AuthController
 from app.controller.destination_controller import DestinationController
+from app.controller.order_controller import OrderController
 from app.controller.team_controller import TeamController
 from app.controller.user_controller import UserController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel, \
     DestinationPaginationModel
-from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel, TeamPaginationModel
-from app.models.users import UserModel, FormUserModel, FormEditUserModel, \
-    UserPaginationModel
+from app.models.orders import OrderModel, FormOrderModel, FormEditOrderModel, \
+    OrderPaginationModel
 from app.models.schemas import TokenSchema, BaseResp, Meta
+from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel, TeamPaginationModel
+from app.models.users import FormEditUserModel, \
+    UserPaginationModel
 from app.models.users import FormUserModel, SystemUser, UserModel
 from app.utils.deps import get_current_user
 from app.utils.helper import get_object_url
@@ -33,6 +36,7 @@ auth_controller = AuthController()
 destination_controller = DestinationController()
 team_controller = TeamController()
 user_controller = UserController()
+order_controller = OrderController()
 
 
 @app.exception_handler(RequestValidationError)
@@ -114,7 +118,7 @@ async def get_users():
 async def get_destinations(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await destination_controller.get_destinations_pagination(page, limit, search)
 
-    if result["destinations"] is None:
+    if result["destinations"] is None or not result["destinations"]:
         raise CustomHttpException(
             status_code=404,
             message="No destinations found"
@@ -163,7 +167,7 @@ async def delete_destination(destination_id: str):
 async def get_teams(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await team_controller.get_teams_pagination(page, limit, search)
 
-    if result["teams"] is None:
+    if result["teams"] is None or not result["teams"]:
         raise CustomHttpException(
             status_code=404,
             message="No teams found"
@@ -212,7 +216,7 @@ async def delete_team(team_id: str):
 async def get_users(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
     result = await user_controller.get_users_pagination(page, limit, search)
 
-    if result["users"] is None:
+    if result["users"] is None or not result["users"]:
         raise CustomHttpException(
             status_code=404,
             message="No users found"
@@ -254,3 +258,53 @@ async def delete_user(user_id: str):
     await user_controller.delete_user(user_id)
 
     return BaseResp(meta=Meta(message="Delete user successfully"))
+
+
+@app.get("/orders", summary='Get all order', response_model=BaseResp[OrderPaginationModel],
+         dependencies=[Depends(get_current_user)])
+async def get_orders(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
+    result = await order_controller.get_orders_pagination(page, limit, search)
+
+    print("ini result", result)
+    if result["orders"] is None or not result["orders"]:
+        raise CustomHttpException(
+            status_code=404,
+            message="No orders found"
+        )
+    return BaseResp[OrderPaginationModel](meta=Meta(message="Get all order successfuly"), data=dict(result))
+
+
+@app.get("/orders/list", summary='Get all order list', response_model=BaseResp[List[OrderModel]],
+         dependencies=[Depends(get_current_user)])
+async def get_orders():
+    result = await order_controller.get_orders()
+
+    if not result:
+        raise CustomHttpException(
+            status_code=404,
+            message="No orders found"
+        )
+    return BaseResp[List[OrderModel]](meta=Meta(message="Get all order list successfuly"), data=result)
+
+
+@app.post('/orders', summary="Create new order", response_model=BaseResp[OrderModel],
+          dependencies=[Depends(get_current_user)])
+async def create_order(data: FormOrderModel = Depends(), ):
+    res = await order_controller.create_order(data)
+    return BaseResp[OrderModel](meta=Meta(message="Create order successfully"), data=res)
+
+
+@app.patch('/orders', summary="Update order", response_model=BaseResp[OrderModel],
+           dependencies=[Depends(get_current_user)])
+async def edit_order(data: FormEditOrderModel = Depends()):
+    res = await order_controller.edit_order(data)
+
+    return BaseResp[OrderModel](meta=Meta(message="Update order successfully"), data=res)
+
+
+@app.delete('/orders/{order_id}', summary="Delete order", response_model=BaseResp,
+            dependencies=[Depends(get_current_user)])
+async def delete_order(order_id: str):
+    await order_controller.delete_order(order_id)
+
+    return BaseResp(meta=Meta(message="Delete order successfully"))
