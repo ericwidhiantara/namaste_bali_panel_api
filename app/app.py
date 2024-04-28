@@ -16,7 +16,7 @@ from app.controller.team_controller import TeamController
 from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel, \
     DestinationPaginationModel
-from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel
+from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel, TeamPaginationModel
 from app.models.schemas import TokenSchema, BaseResp, Meta
 from app.models.users import FormUserModel, SystemUser, UserModel
 from app.utils.deps import get_current_user
@@ -118,7 +118,7 @@ async def get_destinations(page: int = Query(1, gt=0), limit: int = Query(10, gt
     return BaseResp[DestinationPaginationModel](meta=Meta(message="Get all destination successfuly"), data=dict(result))
 
 
-@app.get("/destinations/list", summary='Get all destination', response_model=BaseResp[List[DestinationModel]],
+@app.get("/destinations/list", summary='Get all destination list', response_model=BaseResp[List[DestinationModel]],
          dependencies=[Depends(get_current_user)])
 async def get_destinations():
     result = await destination_controller.get_destinations()
@@ -128,7 +128,7 @@ async def get_destinations():
             status_code=404,
             message="No destinations found"
         )
-    return BaseResp[List[DestinationModel]](meta=Meta(message="Get all destination successfuly"), data=result)
+    return BaseResp[List[DestinationModel]](meta=Meta(message="Get all destination list successfuly"), data=result)
 
 
 @app.post('/destinations', summary="Create new destination", response_model=BaseResp[DestinationModel],
@@ -154,7 +154,20 @@ async def delete_destination(destination_id: str):
     return BaseResp(meta=Meta(message="Delete destination successfully"))
 
 
-@app.get("/teams", summary='Get all team', response_model=BaseResp[List[TeamModel]],
+@app.get("/teams", summary='Get all team', response_model=BaseResp[TeamPaginationModel],
+         dependencies=[Depends(get_current_user)])
+async def get_teams(page: int = Query(1, gt=0), limit: int = Query(10, gt=0), search: str = Query(None)):
+    result = await team_controller.get_teams_pagination(page, limit, search)
+
+    if result["teams"] is None:
+        raise CustomHttpException(
+            status_code=404,
+            message="No teams found"
+        )
+    return BaseResp[TeamPaginationModel](meta=Meta(message="Get all team successfuly"), data=dict(result))
+
+
+@app.get("/teams/list", summary='Get all team list', response_model=BaseResp[List[TeamModel]],
          dependencies=[Depends(get_current_user)])
 async def get_teams():
     result = await team_controller.get_teams()
@@ -164,7 +177,7 @@ async def get_teams():
             status_code=404,
             message="No teams found"
         )
-    return BaseResp[List[TeamModel]](meta=Meta(message="Get all team successfuly"), data=result)
+    return BaseResp[List[TeamModel]](meta=Meta(message="Get all team list successfuly"), data=result)
 
 
 @app.post('/teams', summary="Create new team", response_model=BaseResp[TeamModel],
