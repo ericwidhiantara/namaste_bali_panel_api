@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
 from app.models.users import FormUserModel, FormEditUserModel
-from app.utils.helper import save_picture
+from app.utils.helper import save_picture, get_object_url
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -29,6 +29,8 @@ class UserController:
         items = []
         # Iterate the users
         for user in users:
+            user["picture"] = get_object_url(user["picture"])
+
             # append the user to the items
             items.append(user)
 
@@ -43,8 +45,7 @@ class UserController:
         # Fetch users from the database with pagination
         users = self.collection.find({
             '$or': [
-                {'first_name': {'$regex': search, '$options': 'i'}},
-                {'last_name': {'$regex': search, '$options': 'i'}},
+                {'name': {'$regex': search, '$options': 'i'}},
                 {'username': {'$regex': search, '$options': 'i'}},
                 {'email': {'$regex': search, '$options': 'i'}},
                 {'phone': {'$regex': search, '$options': 'i'}},
@@ -53,12 +54,13 @@ class UserController:
 
         items = []
         # Iterate the users
-        for project in users:
-            # set the images to the project
-            project.pop("_id")
+        for user in users:
+            # set the images to the user
+            user.pop("_id")
+            user["picture"] = get_object_url(user["picture"])
 
-            # append the project to the items
-            items.append(project)
+            # append the user to the items
+            items.append(user)
             print("items", items)
 
         # Count total users for pagination
@@ -89,8 +91,7 @@ class UserController:
 
     async def create_user(self, data: FormUserModel):
         # iterate the data.image
-        upload_dir = "/users/" + data.first_name.lower().replace(" ", "-") + "_" + data.last_name.lower().replace(" ",
-                                                                                                                  "-")
+        upload_dir = "/users/" + data.name.lower().replace(" ", "-") + "_"
 
         picture_path = save_picture(upload_dir, data.picture)
         if picture_path == "File extension not allowed":
@@ -102,8 +103,7 @@ class UserController:
         # Create new user
         user = {
             "id": str(uuid.uuid4()),
-            "first_name": data.first_name,
-            "last_name": data.last_name,
+            "name": data.name,
             "username": data.username,
             "email": data.email,
             "password": data.password,
@@ -130,8 +130,7 @@ class UserController:
                 message="User not found"
             )
 
-        upload_dir = "/users/" + data.first_name.lower().replace(" ", "-") + "_" + data.last_name.lower().replace(" ",
-                                                                                                                  "-")
+        upload_dir = "/users/" + data.name.lower().replace(" ", "-")
 
         # Save picture
         picture_path = save_picture(upload_dir, data.picture)
@@ -143,8 +142,7 @@ class UserController:
 
         # Create new user
         user = {
-            "first_name": data.first_name if data.first_name else item["first_name"],
-            "last_name": data.last_name if data.last_name else item["last_name"],
+            "name": data.name if data.name else item["name"],
             "username": data.username if data.username else item["username"],
             "email": data.email if data.email else item["email"],
             "phone": data.phone if data.phone else item["phone"],

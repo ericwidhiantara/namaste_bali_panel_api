@@ -62,8 +62,7 @@ class AuthController:
         # Create new user
         user = {
             "id": user_id,
-            "first_name": data.first_name,
-            "last_name": data.last_name,
+            "name": data.name,
             "username": data.username,
             "email": data.email,
             "password": get_hashed_password(data.password),
