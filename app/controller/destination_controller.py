@@ -127,7 +127,7 @@ class DestinationController:
 
         if data.image:
             # Save picture
-            upload_dir = "/orders/" + data.id.lower().replace(" ", "-")
+            upload_dir = "/destinations/" + data.id.lower().replace(" ", "-")
 
             picture_path = save_picture(upload_dir, data.image)
             if picture_path == "File extension not allowed":
