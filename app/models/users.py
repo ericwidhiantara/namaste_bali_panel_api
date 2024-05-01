@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import Form, UploadFile
 from pydantic import BaseModel, EmailStr
@@ -33,7 +33,7 @@ class FormEditUserModel:
             email: EmailStr = Form(..., description="user email"),
             password: str = Form(..., min_length=6, max_length=24, description="user password"),
             phone: str = Form(..., description="user phone number"),
-            picture: UploadFile = Form(..., description="user picture"),
+            picture: Optional[UploadFile] = Form(None, description="user picture"),
     ):
         self.id = id
         self.name = name
