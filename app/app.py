@@ -9,6 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+from starlette.staticfiles import StaticFiles
 
 from app.controller.auth_controller import AuthController
 from app.controller.destination_controller import DestinationController
@@ -37,6 +38,8 @@ destination_controller = DestinationController()
 team_controller = TeamController()
 user_controller = UserController()
 order_controller = OrderController()
+
+app.mount('/uploads', StaticFiles(directory='uploads'),'uploads')
 
 
 @app.exception_handler(RequestValidationError)
@@ -98,19 +101,6 @@ async def get_me(user: SystemUser = Depends(get_current_user)):
          dependencies=[Depends(get_current_user)])
 async def get_picture(user: SystemUser = Depends(get_current_user)):
     return get_object_url(user.picture)
-
-
-@app.get("/users", summary='Get all users', response_model=BaseResp[List[UserModel]],
-         dependencies=[Depends(get_current_user)])
-async def get_users():
-    users = await auth_controller.get_users()
-
-    if not users:
-        raise CustomHttpException(
-            status_code=404,
-            message="No users found"
-        )
-    return BaseResp[List[UserModel]](meta=Meta(message="Get all user successfully"), data=users)
 
 
 @app.get("/destinations", summary='Get all destination', response_model=BaseResp[DestinationPaginationModel],
