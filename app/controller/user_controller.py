@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from app.handler.http_handler import CustomHttpException
 from app.models.users import FormUserModel, FormEditUserModel
 from app.utils.helper import save_picture, get_object_url
+from app.utils.utils import get_hashed_password
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -106,7 +107,7 @@ class UserController:
             "name": data.name,
             "username": data.username,
             "email": data.email,
-            "password": data.password,
+            "password": get_hashed_password(data.password),
             "phone": data.phone,
             "picture": picture_path,
             "created_at": int(datetime.now().timestamp()),
