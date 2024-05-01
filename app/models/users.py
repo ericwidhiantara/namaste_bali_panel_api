@@ -31,7 +31,6 @@ class FormEditUserModel:
             name: str = Form(..., description="user name"),
             username: str = Form(..., description="user username"),
             email: EmailStr = Form(..., description="user email"),
-            password: str = Form(..., min_length=6, max_length=24, description="user password"),
             phone: str = Form(..., description="user phone number"),
             picture: Optional[UploadFile] = Form(None, description="user picture"),
     ):
@@ -39,7 +38,6 @@ class FormEditUserModel:
         self.name = name
         self.username = username
         self.email = email
-        self.password = password
         self.phone = phone
         self.picture = picture
 
