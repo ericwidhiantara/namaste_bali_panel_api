@@ -8,16 +8,14 @@ class FormUserModel:
 
     def __init__(
             self,
-            first_name: str = Form(..., description="user first name"),
-            last_name: str = Form(..., description="user last name"),
+            name: str = Form(..., description="user name"),
             username: str = Form(..., description="user username"),
             email: EmailStr = Form(..., description="user email"),
             password: str = Form(..., min_length=6, max_length=24, description="user password"),
             phone: str = Form(..., description="user phone number"),
             picture: UploadFile = Form(..., description="user picture"),
     ):
-        self.first_name = first_name
-        self.last_name = last_name
+        self.name = name
         self.username = username
         self.email = email
         self.password = password
@@ -30,8 +28,7 @@ class FormEditUserModel:
     def __init__(
             self,
             id: str = Form(..., description="user id"),
-            first_name: str = Form(..., description="user first name"),
-            last_name: str = Form(..., description="user last name"),
+            name: str = Form(..., description="user name"),
             username: str = Form(..., description="user username"),
             email: EmailStr = Form(..., description="user email"),
             password: str = Form(..., min_length=6, max_length=24, description="user password"),
@@ -39,8 +36,7 @@ class FormEditUserModel:
             picture: UploadFile = Form(..., description="user picture"),
     ):
         self.id = id
-        self.first_name = first_name
-        self.last_name = last_name
+        self.name = name
         self.username = username
         self.email = email
         self.password = password
@@ -51,8 +47,7 @@ class FormEditUserModel:
 class UserModel(BaseModel):
     id: str
     email: str
-    first_name: str
-    last_name: str
+    name: str
     username: str
     phone: str
     picture: str
