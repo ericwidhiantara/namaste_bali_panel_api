@@ -20,7 +20,7 @@ from app.handler.http_handler import CustomHttpException, custom_exception
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel, \
     DestinationPaginationModel
 from app.models.orders import OrderModel, FormOrderModel, FormEditOrderModel, \
-    OrderPaginationModel
+    OrderPaginationModel, FormUpdatePaymentOrderModel
 from app.models.schemas import TokenSchema, BaseResp, Meta
 from app.models.teams import TeamModel, FormTeamModel, FormEditTeamModel, TeamPaginationModel
 from app.models.users import FormEditUserModel, \
@@ -39,7 +39,7 @@ team_controller = TeamController()
 user_controller = UserController()
 order_controller = OrderController()
 
-app.mount('/uploads', StaticFiles(directory='uploads'),'uploads')
+app.mount('/uploads', StaticFiles(directory='uploads'), 'uploads')
 
 
 @app.exception_handler(RequestValidationError)
@@ -288,6 +288,14 @@ async def edit_order(data: FormEditOrderModel = Depends()):
     res = await order_controller.edit_order(data)
 
     return BaseResp[OrderModel](meta=Meta(message="Update order successfully"), data=res)
+
+
+@app.patch('/orders/payment', summary="Update payment status", response_model=BaseResp[OrderModel],
+           dependencies=[Depends(get_current_user)])
+async def edit_order(data: FormUpdatePaymentOrderModel = Depends()):
+    res = await order_controller.edit_payment_status(data)
+
+    return BaseResp[OrderModel](meta=Meta(message="Update payment status successfully"), data=res)
 
 
 @app.delete('/orders/{order_id}', summary="Delete order", response_model=BaseResp,

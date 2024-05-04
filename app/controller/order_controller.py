@@ -6,8 +6,8 @@ from fastapi import FastAPI, status
 from pymongo import MongoClient
 
 from app.handler.http_handler import CustomHttpException
-from app.models.orders import FormOrderModel, FormEditOrderModel
-from app.utils.helper import save_picture
+from app.models.orders import FormOrderModel, FormEditOrderModel, FormUpdatePaymentOrderModel
+from app.utils.helper import save_picture, get_object_url
 
 # Connect to MongoDB
 MONGODB_URL = os.getenv("MONGODB_URL")
@@ -31,6 +31,8 @@ class OrderController:
         items = []
         # Iterate the orders
         for order in orders:
+            order["payment_proof"] = get_object_url(order["payment_proof"])
+
             # append the order to the items
             order["user"] = self.user_collection.find_one({"id": order["user_id"]})
             print("ini user order", order["user"])
@@ -61,6 +63,7 @@ class OrderController:
             # set the images to the order
             order.pop("_id")
             order["user"] = self.user_collection.find_one({"id": order["user_id"]})
+            order["payment_proof"] = get_object_url(order["payment_proof"])
 
             # append the order to the items
             items.append(order)
@@ -136,6 +139,38 @@ class OrderController:
                 status_code=status.HTTP_404_NOT_FOUND,
                 message="Order not found"
             )
+
+        # update order
+        order = {
+            "customer_name": data.customer_name if data.customer_name else item["customer_name"],
+            "customer_email": data.customer_email if data.customer_email else item["customer_email"],
+            "customer_phone": data.customer_phone if data.customer_phone else item["customer_phone"],
+            "customer_country": data.customer_country if data.customer_country else item["customer_country"],
+            "customer_address": data.customer_address if data.customer_address else item["customer_address"],
+            "total_price": data.total_price if data.total_price else item["total_price"],
+            "user_id": data.user_id if data.user_id else item["user_id"],
+            "updated_at": int(datetime.now().timestamp()),
+        }
+
+        print("ini order", order)
+        # Update order into MongoDB
+        self.collection.update_one({"id": data.id}, {"$set": order})
+        updated = self.collection.find_one({"id": data.id})
+
+        # set item from updated data
+        item = updated
+        item["user"] = self.user_collection.find_one({"id": item["user_id"]})
+
+        return item
+
+    async def edit_payment_status(self, data: FormUpdatePaymentOrderModel):
+
+        item = self.collection.find_one({"id": data.id})
+        if not item:
+            raise CustomHttpException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                message="Order not found"
+            )
         picture_path = None
 
         if data.payment_proof:
@@ -151,16 +186,9 @@ class OrderController:
 
         # Create new order
         order = {
-            "customer_name": data.customer_name if data.customer_name else item["customer_name"],
-            "customer_email": data.customer_email if data.customer_email else item["customer_email"],
-            "customer_phone": data.customer_phone if data.customer_phone else item["customer_phone"],
-            "customer_country": data.customer_country if data.customer_country else item["customer_country"],
-            "customer_address": data.customer_address if data.customer_address else item["customer_address"],
-            "total_price": data.total_price if data.total_price else item["total_price"],
             "payment_status": data.payment_status if data.payment_status else item["payment_status"],
             "payment_proof": picture_path if picture_path else item["payment_proof"],
             "user_id": data.user_id if data.user_id else item["user_id"],
-            "created_at": int(datetime.now().timestamp()),
             "updated_at": int(datetime.now().timestamp()),
         }
 
