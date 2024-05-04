@@ -12,11 +12,13 @@ from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
 
 from app.controller.auth_controller import AuthController
+from app.controller.dashboard_controller import DashboardController
 from app.controller.destination_controller import DestinationController
 from app.controller.order_controller import OrderController
 from app.controller.team_controller import TeamController
 from app.controller.user_controller import UserController
 from app.handler.http_handler import CustomHttpException, custom_exception
+from app.models.dashboard import DashboardModel
 from app.models.destinations import DestinationModel, FormDestinationModel, FormEditDestinationModel, \
     DestinationPaginationModel
 from app.models.orders import OrderModel, FormOrderModel, FormEditOrderModel, \
@@ -38,6 +40,7 @@ destination_controller = DestinationController()
 team_controller = TeamController()
 user_controller = UserController()
 order_controller = OrderController()
+dashboard_controller = DashboardController()
 
 app.mount('/uploads', StaticFiles(directory='uploads'), 'uploads')
 
@@ -304,3 +307,11 @@ async def delete_order(order_id: str):
     await order_controller.delete_order(order_id)
 
     return BaseResp(meta=Meta(message="Delete order successfully"))
+
+
+@app.get('/dashboard', summary="Get dashboard data", response_model=BaseResp[DashboardModel],
+         dependencies=[Depends(get_current_user)])
+async def dashboard():
+    res = await dashboard_controller.get_dashboard_data()
+
+    return BaseResp[DashboardModel](meta=Meta(message="Get dashboard successfully"), data=res)
