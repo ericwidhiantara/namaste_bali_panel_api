@@ -51,8 +51,6 @@ class FormEditOrderModel:
             customer_country: str = Form(..., description="customer country"),
             customer_address: str = Form(..., description="customer address"),
             total_price: int = Form(..., description="total price"),
-            payment_status: PaymentStatus = Form(..., description="payment status"),
-            payment_proof: Optional[UploadFile] = Form(None, description="payment proof"),
             user_id: str = Form(..., description="user id"),
     ):
         self.id = id
@@ -62,6 +60,19 @@ class FormEditOrderModel:
         self.customer_country = customer_country
         self.customer_address = customer_address
         self.total_price = total_price
+        self.user_id = user_id
+
+
+class FormUpdatePaymentOrderModel:
+
+    def __init__(
+            self,
+            id: str = Form(..., description="order id"),
+            payment_status: PaymentStatus = Form(..., description="payment status"),
+            payment_proof: UploadFile = Form(..., description="payment proof"),
+            user_id: str = Form(..., description="user id"),
+    ):
+        self.id = id
         self.payment_status = payment_status
         self.payment_proof = payment_proof
         self.user_id = user_id
