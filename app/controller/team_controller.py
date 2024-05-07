@@ -157,7 +157,7 @@ class TeamController:
             "tiktok": data.tiktok if data.tiktok else item.get("tiktok"),
             "role": data.role,
             "address": data.address,
-            "image": picture_path,
+            "image": picture_path if picture_path else item.get("image"),
             "created_at": int(datetime.now().timestamp()),
             "updated_at": int(datetime.now().timestamp()),
         }
