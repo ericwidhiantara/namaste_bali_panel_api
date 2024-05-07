@@ -181,17 +181,17 @@ class OrderController:
             )
         picture_path = None
 
-        if data.payment_proof:
-            # Save picture
-            upload_dir = "/orders/" + "order_" + data.id.lower().replace(" ", "-")
-
-            picture_path = save_picture(upload_dir, data.payment_proof)
-            if picture_path == "File extension not allowed":
-                raise CustomHttpException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    message="File extension not allowed"
-                )
         if data.payment_status == "paid":
+            if data.payment_proof:
+                # Save picture
+                upload_dir = "/orders/" + "order_" + data.id.lower().replace(" ", "-")
+
+                picture_path = save_picture(upload_dir, data.payment_proof)
+                if picture_path == "File extension not allowed":
+                    raise CustomHttpException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        message="File extension not allowed"
+                    )
             if not picture_path:
                 raise CustomHttpException(
                     status_code=status.HTTP_400_BAD_REQUEST,
