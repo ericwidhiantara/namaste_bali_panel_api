@@ -166,10 +166,18 @@ class OrderController:
     async def edit_payment_status(self, data: FormUpdatePaymentOrderModel):
 
         item = self.collection.find_one({"id": data.id})
+        user = self.user_collection.find_one({"id": data.user_id})
+
         if not item:
             raise CustomHttpException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 message="Order not found"
+            )
+
+        if not user:
+            raise CustomHttpException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                message="User not found"
             )
         picture_path = None
 
@@ -195,19 +203,19 @@ class OrderController:
         # Create new order
         order = {
             "payment_status": data.payment_status if data.payment_status else item["payment_status"],
-            "payment_proof": picture_path if picture_path else item["payment_proof"],
+            "payment_proof": picture_path,
             "user_id": data.user_id if data.user_id else item["user_id"],
             "updated_at": int(datetime.now().timestamp()),
         }
 
-        print("ini order", order)
+        print("ini order payment", order)
         # Update order into MongoDB
         self.collection.update_one({"id": data.id}, {"$set": order})
         updated = self.collection.find_one({"id": data.id})
 
         # set item from updated data
         item = updated
-        item["user"] = self.user_collection.find_one({"id": item["user_id"]})
+        item["user"] = user
 
         return item
 

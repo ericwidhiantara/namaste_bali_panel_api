@@ -295,7 +295,7 @@ async def edit_order(data: FormEditOrderModel = Depends()):
 
 @app.patch('/orders/payment', summary="Update payment status", response_model=BaseResp[OrderModel],
            dependencies=[Depends(get_current_user)])
-async def edit_order(data: FormUpdatePaymentOrderModel = Depends()):
+async def edit_payment(data: FormUpdatePaymentOrderModel = Depends()):
     res = await order_controller.edit_payment_status(data)
 
     return BaseResp[OrderModel](meta=Meta(message="Update payment status successfully"), data=res)
