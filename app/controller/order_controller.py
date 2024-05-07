@@ -183,6 +183,14 @@ class OrderController:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     message="File extension not allowed"
                 )
+        if data.payment_status == "paid":
+            if not picture_path:
+                raise CustomHttpException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    message="Payment proof is required"
+                )
+            else:
+                picture_path = None
 
         # Create new order
         order = {

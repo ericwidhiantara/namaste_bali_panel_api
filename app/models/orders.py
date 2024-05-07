@@ -69,7 +69,7 @@ class FormUpdatePaymentOrderModel:
             self,
             id: str = Form(..., description="order id"),
             payment_status: PaymentStatus = Form(..., description="payment status"),
-            payment_proof: UploadFile = Form(..., description="payment proof"),
+            payment_proof: Optional[UploadFile] = Form(None, description="payment proof"),
             user_id: str = Form(..., description="user id"),
     ):
         self.id = id
