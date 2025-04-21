@@ -6,20 +6,9 @@ services:
       dockerfile: Dockerfile
     container_name: namaste_bali_panel_api
     volumes:
-      - ./uploads:/app/uploads
+      - ./Uploads:/app/uploads
     env_file:
       - .env
     ports:
       - "8282:8080"
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:latest
-    container_name: nginx_reverse_proxy
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/api.conf
-    ports:
-      - "80:80"
-    depends_on:
-      - app
     restart: unless-stopped
