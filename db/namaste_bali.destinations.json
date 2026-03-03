@@ -7,7 +7,7 @@
     "title": "Tanah Lot",
     "slug": "tanah-lot",
     "description": "Tanah Lot Tabanan",
-    "image": "uploads/destinations/tanah-lot/tanah-lot.png",
+    "image": "uploads/destinations/tanah-lot.png",
     "created_at": 1745249260,
     "updated_at": 1745249260
   },
@@ -19,7 +19,7 @@
     "title": "Pura Lempuyang",
     "slug": "pura-lempuyang",
     "description": "Pura Lempuyang",
-    "image": "uploads/destinations/pura-lempuyang/lempuyang.png",
+    "image": "uploads/destinations/pura-lempuyang.png",
     "created_at": 1745249381,
     "updated_at": 1745249381
   },
@@ -31,7 +31,7 @@
     "title": "Tirta Gangga",
     "slug": "tirta-gangga",
     "description": "Tirta Gangga",
-    "image": "uploads/destinations/tirta-gangga/tirta-gangga.png",
+    "image": "uploads/destinations/tirta-gangga.png",
     "created_at": 1745249441,
     "updated_at": 1745249441
   },
@@ -43,7 +43,7 @@
     "title": "Ulundanu",
     "slug": "ulundanu",
     "description": "Ulundanu",
-    "image": "uploads/destinations/ulundanu/ulun-danu.png",
+    "image": "uploads/destinations/ulundanu.png",
     "created_at": 1745249478,
     "updated_at": 1745249478
   },
@@ -55,7 +55,7 @@
     "title": "Gunung Batur",
     "slug": "gunung-batur",
     "description": "Gunung Batur",
-    "image": "uploads/destinations/gunung-batur/mount-batur.png",
+    "image": "uploads/destinations/gunung-batur.png",
     "created_at": 1745249527,
     "updated_at": 1745249527
   },
@@ -67,7 +67,7 @@
     "title": "Monkey Forest",
     "slug": "monkey-forest",
     "description": "Monkey Forest",
-    "image": "uploads/destinations/monkey-forest/monkey-forest.png",
+    "image": "uploads/destinations/monkey-forest.png",
     "created_at": 1745249576,
     "updated_at": 1745249576
   },
@@ -79,7 +79,7 @@
     "title": "Kintamani",
     "slug": "kintamani",
     "description": "Kintamani",
-    "image": "uploads/destinations/kintamani/kintamani.png",
+    "image": "uploads/destinations/kintamani.png",
     "created_at": 1745249640,
     "updated_at": 1745249640
   },
@@ -91,7 +91,7 @@
     "title": "Kelingking Beach",
     "slug": "kelingking-beach",
     "description": "Kelingking Beach",
-    "image": "uploads/destinations/kelingking-beach/kelingking-beach.png",
+    "image": "uploads/destinations/kelingking-beach.png",
     "created_at": 1745249755,
     "updated_at": 1745249755
   },
@@ -103,7 +103,7 @@
     "title": "Angel Billabong Beach",
     "slug": "angel-billabong-beach",
     "description": "Angel Billabong Beach",
-    "image": "uploads/destinations/angel-billabong-beach/angels-billabong.png",
+    "image": "uploads/destinations/angel-billabong-beach.png",
     "created_at": 1745249783,
     "updated_at": 1745249783
   },
@@ -115,7 +115,7 @@
     "title": "Broken Beach Nusa Penida",
     "slug": "broken-beach-nusa-penida",
     "description": "Broken Beach Nusa Penida",
-    "image": "uploads/destinations/broken-beach-nusa-penida/broken-beach.png",
+    "image": "uploads/destinations/broken-beach-nusa-penida.png",
     "created_at": 1745249804,
     "updated_at": 1745249804
   },
@@ -127,7 +127,7 @@
     "title": "Crystal Bay Beach",
     "slug": "crystal-bay-beach",
     "description": "Crystal Bay Beach",
-    "image": "uploads/destinations/crystal-bay-beach/crystal-bay-beach.png",
+    "image": "uploads/destinations/crystal-bay-beach.png",
     "created_at": 1745249816,
     "updated_at": 1745249816
   },
@@ -139,7 +139,7 @@
     "title": "Uluwatu",
     "slug": "uluwatu",
     "description": "Uluwatu",
-    "image": "uploads/destinations/uluwatu/uluwatu.png",
+    "image": "uploads/destinations/uluwatu.png",
     "created_at": 1745249830,
     "updated_at": 1745249830
   },
@@ -151,7 +151,7 @@
     "title": "Tegalalang",
     "slug": "tegalalang",
     "description": "Tegalalang",
-    "image": "uploads/destinations/tegalalang/tegalalang.png",
+    "image": "uploads/destinations/tegalalang.png",
     "created_at": 1745249840,
     "updated_at": 1745249840
   },
@@ -163,7 +163,7 @@
     "title": "Penglipuran",
     "slug": "penglipuran",
     "description": "Penglipuran",
-    "image": "uploads/destinations/penglipuran/penglipuran.png",
+    "image": "uploads/destinations/penglipuran.png",
     "created_at": 1745249850,
     "updated_at": 1745249850
   }
