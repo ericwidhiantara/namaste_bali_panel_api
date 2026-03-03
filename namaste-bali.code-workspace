@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../svelte/namaste-bali"
+		},
+		{
+			"path": "../../svelte/namaste-bali-panel"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../kantor/solid-berderap-backend"
+		}
+	]
+}
