@@ -4,12 +4,14 @@ from typing import List
 from fastapi import FastAPI, Depends, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from minio.error import S3Error
 from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 from starlette.staticfiles import StaticFiles
+from app.config.minio_config import MinIOConfig
 
 from app.controller.auth_controller import AuthController
 from app.controller.dashboard_controller import DashboardController
@@ -43,6 +45,24 @@ order_controller = OrderController()
 dashboard_controller = DashboardController()
 
 # app.mount('/uploads', StaticFiles(directory='uploads'), 'uploads')
+
+
+@app.get('/file/{file_path:path}', summary='Serve file from MinIO', include_in_schema=False)
+async def serve_file(file_path: str):
+    """Proxy files from MinIO storage"""
+    try:
+        client = MinIOConfig.get_client()
+        bucket = MinIOConfig.BUCKET
+        response = client.get_object(bucket, file_path)
+        content_type = response.headers.get('Content-Type', 'application/octet-stream')
+        return StreamingResponse(
+            response.stream(32 * 1024),
+            media_type=content_type,
+            headers={"Cache-Control": "public, max-age=86400"}
+        )
+    except S3Error:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 @app.exception_handler(RequestValidationError)
