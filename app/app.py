@@ -42,7 +42,7 @@ user_controller = UserController()
 order_controller = OrderController()
 dashboard_controller = DashboardController()
 
-app.mount('/uploads', StaticFiles(directory='uploads'), 'uploads')
+# app.mount('/uploads', StaticFiles(directory='uploads'), 'uploads')
 
 
 @app.exception_handler(RequestValidationError)

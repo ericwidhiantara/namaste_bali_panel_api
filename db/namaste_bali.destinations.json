@@ -1,0 +1,170 @@
+[
+  {
+    "_id": {
+      "$oid": "680663ec439876c2ee261ee8"
+    },
+    "id": "e210139c-4a20-4ad4-adc0-4cc0fee7e518",
+    "title": "Tanah Lot",
+    "slug": "tanah-lot",
+    "description": "Tanah Lot Tabanan",
+    "image": "uploads/destinations/tanah-lot/tanah-lot.png",
+    "created_at": 1745249260,
+    "updated_at": 1745249260
+  },
+  {
+    "_id": {
+      "$oid": "68066465439876c2ee261ee9"
+    },
+    "id": "3b516055-5535-460e-a6c5-9e35c35e562b",
+    "title": "Pura Lempuyang",
+    "slug": "pura-lempuyang",
+    "description": "Pura Lempuyang",
+    "image": "uploads/destinations/pura-lempuyang/lempuyang.png",
+    "created_at": 1745249381,
+    "updated_at": 1745249381
+  },
+  {
+    "_id": {
+      "$oid": "680664a1439876c2ee261eea"
+    },
+    "id": "430fa082-bc0a-45d3-abcf-b6e94133e8b0",
+    "title": "Tirta Gangga",
+    "slug": "tirta-gangga",
+    "description": "Tirta Gangga",
+    "image": "uploads/destinations/tirta-gangga/tirta-gangga.png",
+    "created_at": 1745249441,
+    "updated_at": 1745249441
+  },
+  {
+    "_id": {
+      "$oid": "680664c6439876c2ee261eeb"
+    },
+    "id": "39959529-092a-4500-b50a-fb7983c7ac73",
+    "title": "Ulundanu",
+    "slug": "ulundanu",
+    "description": "Ulundanu",
+    "image": "uploads/destinations/ulundanu/ulun-danu.png",
+    "created_at": 1745249478,
+    "updated_at": 1745249478
+  },
+  {
+    "_id": {
+      "$oid": "680664f7439876c2ee261eec"
+    },
+    "id": "88f696a9-1de2-4a77-bc5a-1856a72886f8",
+    "title": "Gunung Batur",
+    "slug": "gunung-batur",
+    "description": "Gunung Batur",
+    "image": "uploads/destinations/gunung-batur/mount-batur.png",
+    "created_at": 1745249527,
+    "updated_at": 1745249527
+  },
+  {
+    "_id": {
+      "$oid": "68066528439876c2ee261eed"
+    },
+    "id": "8ccd3f8b-2489-49d2-aaaf-7d7d8a9aeb01",
+    "title": "Monkey Forest",
+    "slug": "monkey-forest",
+    "description": "Monkey Forest",
+    "image": "uploads/destinations/monkey-forest/monkey-forest.png",
+    "created_at": 1745249576,
+    "updated_at": 1745249576
+  },
+  {
+    "_id": {
+      "$oid": "68066568439876c2ee261eee"
+    },
+    "id": "162d2410-5e18-405f-be02-a085ca44a93b",
+    "title": "Kintamani",
+    "slug": "kintamani",
+    "description": "Kintamani",
+    "image": "uploads/destinations/kintamani/kintamani.png",
+    "created_at": 1745249640,
+    "updated_at": 1745249640
+  },
+  {
+    "_id": {
+      "$oid": "680665db439876c2ee261eef"
+    },
+    "id": "2e5caec0-f6a6-4eed-9254-c1412cba5480",
+    "title": "Kelingking Beach",
+    "slug": "kelingking-beach",
+    "description": "Kelingking Beach",
+    "image": "uploads/destinations/kelingking-beach/kelingking-beach.png",
+    "created_at": 1745249755,
+    "updated_at": 1745249755
+  },
+  {
+    "_id": {
+      "$oid": "680665f7439876c2ee261ef0"
+    },
+    "id": "4b422a9b-7a5a-4862-812d-0b1b0cb93f67",
+    "title": "Angel Billabong Beach",
+    "slug": "angel-billabong-beach",
+    "description": "Angel Billabong Beach",
+    "image": "uploads/destinations/angel-billabong-beach/angels-billabong.png",
+    "created_at": 1745249783,
+    "updated_at": 1745249783
+  },
+  {
+    "_id": {
+      "$oid": "6806660c439876c2ee261ef1"
+    },
+    "id": "6540de5b-324c-4437-8330-61e7b4d5ebae",
+    "title": "Broken Beach Nusa Penida",
+    "slug": "broken-beach-nusa-penida",
+    "description": "Broken Beach Nusa Penida",
+    "image": "uploads/destinations/broken-beach-nusa-penida/broken-beach.png",
+    "created_at": 1745249804,
+    "updated_at": 1745249804
+  },
+  {
+    "_id": {
+      "$oid": "68066618439876c2ee261ef2"
+    },
+    "id": "c4c7ea05-3569-4379-a567-aab78111990f",
+    "title": "Crystal Bay Beach",
+    "slug": "crystal-bay-beach",
+    "description": "Crystal Bay Beach",
+    "image": "uploads/destinations/crystal-bay-beach/crystal-bay-beach.png",
+    "created_at": 1745249816,
+    "updated_at": 1745249816
+  },
+  {
+    "_id": {
+      "$oid": "68066630439876c2ee261ef3"
+    },
+    "id": "a1ea4f97-c860-4597-a95b-4df82f2c0bcd",
+    "title": "Uluwatu",
+    "slug": "uluwatu",
+    "description": "Uluwatu",
+    "image": "uploads/destinations/uluwatu/uluwatu.png",
+    "created_at": 1745249830,
+    "updated_at": 1745249830
+  },
+  {
+    "_id": {
+      "$oid": "68066640439876c2ee261ef4"
+    },
+    "id": "48bccfb0-c50f-4ab5-9b62-81e8c54aa8a1",
+    "title": "Tegalalang",
+    "slug": "tegalalang",
+    "description": "Tegalalang",
+    "image": "uploads/destinations/tegalalang/tegalalang.png",
+    "created_at": 1745249840,
+    "updated_at": 1745249840
+  },
+  {
+    "_id": {
+      "$oid": "68066650439876c2ee261ef5"
+    },
+    "id": "d1e266ec-6b3c-47ac-b8cd-fe30f3693fcb",
+    "title": "Penglipuran",
+    "slug": "penglipuran",
+    "description": "Penglipuran",
+    "image": "uploads/destinations/penglipuran/penglipuran.png",
+    "created_at": 1745249850,
+    "updated_at": 1745249850
+  }
+]

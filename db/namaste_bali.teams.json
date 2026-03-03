@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "680662b9439876c2ee261ee6"
+  },
+  "id": "1a8c9cad-4e87-4a3a-8048-b8b03d1710e3",
+  "name": "Ida Bagus Ngurah Swartika (Gus AJi)",
+  "email": "namastebalitrans99@gmail.com",
+  "whatsapp": "6283114998908",
+  "facebook": "https://web.facebook.com/goes.tillkiss",
+  "instagram": "",
+  "twitter": "",
+  "tiktok": "",
+  "role": "Owner",
+  "address": "Jalan Patih Jelantik, Dusun Paluangan Batu, Desa Batuagung, Jembrana 82218",
+  "image": "uploads/teams/ida-bagus-ngurah-swartika-(gus-aji)/8b7f2c56-c13a-49b8-a320-41fd12d55583.jpeg",
+  "created_at": 1745249117,
+  "updated_at": 1745249117
+},
+{
+  "_id": {
+    "$oid": "6806633c439876c2ee261ee7"
+  },
+  "id": "218e686c-fd11-4938-a10a-03272920749a",
+  "name": "Gung Dwi",
+  "email": "namastebalitrans99@gmail.com",
+  "whatsapp": "6283892565216",
+  "facebook": "https://www.facebook.com/share/1AHkHpGbMH/?mibextid=wwXIfr",
+  "instagram": "https://www.instagram.com/agungrai49?utm_source=qr",
+  "twitter": null,
+  "tiktok": null,
+  "role": "Customer Service",
+  "address": "Jalan Patih Jelantik, Dusun Paluangan Batu, Desa Batuagung, Jembrana 82218",
+  "image": "uploads/teams/gung-dwi/8a3dbeb1-856c-4f07-b203-5b0b58a79217.jpeg",
+  "created_at": 1745249084,
+  "updated_at": 1745249084
+}]

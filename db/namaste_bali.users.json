@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "68064f1cd1728c117bf6279b"
+  },
+  "id": "d24b1128-9e35-4391-883b-837edb85e30e",
+  "name": "Admin Namaste Bali Trans",
+  "username": "admin",
+  "email": "namastebalitrans99@gmail.com",
+  "password": "$2b$12$P4wW8vviKjBlw4UlIMf1YOP/H158dzYOLX2FjXUM/YDgpZlTheyaW",
+  "phone": "085737159915",
+  "picture": "uploads/users/admin/bandung.jpg",
+  "created_at": 1745243932,
+  "updated_at": 1745243932,
+  "is_active": false
+}]
